@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apprentissage de la Lecture - GS/CP</title>
+    <title>Apprentissage de la Lecture - Connexion</title>
     <style>
         * {
             margin: 0;
@@ -13,13 +13,17 @@
 
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
             min-height: 100vh;
             color: #2d3436;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
+            width: 90%;
             margin: 0 auto;
             padding: 20px;
         }
@@ -44,28 +48,57 @@
             color: #636e72;
         }
 
-        /* Écran de connexion */
         .login-screen {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 40px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
         }
 
         .student-selector {
             margin: 30px 0;
         }
 
-        .student-selector select, .student-selector input {
-            font-size: 1.5em;
-            padding: 15px 20px;
-            border: 3px solid #a29bfe;
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .student-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
             border-radius: 15px;
-            margin: 10px;
-            min-width: 200px;
-            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-card-avatar {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+
+        .student-card-name {
+            font-size: 1.2em;
+            font-weight: bold;
         }
 
         .btn {
@@ -87,113 +120,15 @@
         }
 
         .btn-secondary {
-            background: #a29bfe;
+            background: #74b9ff;
         }
 
-        .btn-secondary:hover {
-            box-shadow: 0 5px 15px rgba(162, 155, 254, 0.3);
-        }
-
-        /* Menu principal */
-        .main-menu {
-            display: none;
-        }
-
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .game-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        .game-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2d3436;
-        }
-
-        .game-description {
-            color: #636e72;
-            font-size: 1em;
-            line-height: 1.4;
-            margin-bottom: 15px;
-        }
-
-        .level-badge {
-            display: inline-block;
-            background: #fdcb6e;
-            color: #2d3436;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        /* Barre d'utilisateur */
-        .user-bar {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: #a29bfe;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .progress-info {
-            font-size: 0.9em;
-            color: #636e72;
-        }
-
-        /* Fonctionnalités enseignant */
         .teacher-panel {
             display: none;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
         .teacher-controls {
@@ -226,21 +161,6 @@
             display: none;
         }
 
-        /* Section titre */
-        .section-title {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .section-title h2 {
-            color: #6c5ce7;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -249,10 +169,18 @@
             .header h1 {
                 font-size: 2em;
             }
-            
-            .games-grid {
-                grid-template-columns: 1fr;
-            }
+        }
+
+        #newStudentInput {
+            width: 300px;
+            height: 50px;
+            font-size: 1.2em;
+            padding: 10px;
+            margin: 10px auto;
+            border: 2px solid #74b9ff;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
         }
     </style>
 </head>
@@ -260,39 +188,23 @@
     <div class="container">
         <div class="header">
             <h1>📚 Apprentissage de la Lecture</h1>
-            <p class="subtitle">Grande Section / CP - Sons, Syllabes et Mots</p>
+            <p class="subtitle">Jeux éducatifs pour apprendre à lire</p>
         </div>
 
-        <!-- Écran de connexion -->
-        <div id="loginScreen" class="login-screen">
+        <div class="login-screen">
             <h2>👋 Bonjour ! Choisis ton prénom</h2>
             <div class="student-selector">
-                <select id="studentSelect">
-                    <option value="">-- Choisir un prénom --</option>
-                </select>
-                <br>
+                <div id="studentsGrid" class="students-grid">
+                    <!-- Les élèves s'afficheront ici sous forme de cartes -->
+                </div>
                 <input type="text" id="newStudentInput" placeholder="Nouveau prénom" style="display: none;" onkeypress="if(event.key==='Enter') addNewStudent()">
             </div>
-            <button class="btn" onclick="loginStudent()">Commencer à jouer</button>
             <button class="btn btn-secondary" onclick="toggleNewStudent()" id="newStudentBtn">Nouveau prénom</button>
             <button class="btn" onclick="addNewStudent()" id="addStudentBtn" style="display: none;">Ajouter élève</button>
             <br><br>
             <button class="btn btn-secondary" onclick="toggleTeacherPanel()">👩‍🏫 Espace enseignant</button>
         </div>
 
-        <!-- Barre utilisateur -->
-        <div id="userBar" class="user-bar hidden">
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar"></div>
-                <div>
-                    <div id="userName"></div>
-                    <div class="progress-info" id="userProgress"></div>
-                </div>
-            </div>
-            <button class="btn btn-secondary" onclick="logout()">Changer d'élève</button>
-        </div>
-
-        <!-- Panel enseignant -->
         <div id="teacherPanel" class="teacher-panel">
             <h3>📊 Espace Enseignant</h3>
             <div class="teacher-controls">
@@ -302,136 +214,6 @@
             </div>
             <div id="classStats" class="stats-grid hidden">
                 <!-- Les stats seront générées ici -->
-            </div>
-        </div>
-
-        <!-- Menu principal des jeux -->
-        <div id="mainMenu" class="main-menu">
-            <!-- Section 1: Sons des lettres -->
-            <div class="section-title">
-                <h2>🔊 Les Sons des Lettres</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('sons-lettres', 1)">
-                    <div class="game-icon">🔤</div>
-                    <div class="game-title">Sons des Lettres</div>
-                    <div class="game-description">Écoute et reconnais le son de chaque lettre</div>
-                    <div class="level-badge">Niveau 1 - Facile</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('sons-lettres', 2)">
-                    <div class="game-icon">🎵</div>
-                    <div class="game-title">Sons des Lettres</div>
-                    <div class="game-description">Trouve la lettre qui fait le son entendu</div>
-                    <div class="level-badge">Niveau 2 - Moyen</div>
-                </div>
-            </div>
-
-            <!-- Section 2: Syllabes -->
-            <div class="section-title">
-                <h2>🎯 Lire des Syllabes</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('lire-syllabes', 1)">
-                    <div class="game-icon">👶</div>
-                    <div class="game-title">Syllabes Simples</div>
-                    <div class="game-description">Lis des syllabes simples (ba, mi, ro...)</div>
-                    <div class="level-badge">Niveau 1 - Débutant</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('lire-syllabes', 2)">
-                    <div class="game-icon">📖</div>
-                    <div class="game-title">Syllabes Variées</div>
-                    <div class="game-description">Lis des syllabes plus complexes</div>
-                    <div class="level-badge">Niveau 2 - Intermédiaire</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('lire-syllabes', 3)">
-                    <div class="game-icon">🎓</div>
-                    <div class="game-title">Syllabes Complexes</div>
-                    <div class="game-description">Lis des syllabes avec sons complexes</div>
-                    <div class="level-badge">Niveau 3 - Avancé</div>
-                </div>
-            </div>
-
-            <!-- Section 3: Syllabes d'attaque et de fin -->
-            <div class="section-title">
-                <h2>🎪 Trouver les Syllabes</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('syllabe-attaque')">
-                    <div class="game-icon">🚀</div>
-                    <div class="game-title">Syllabe d'Attaque</div>
-                    <div class="game-description">Trouve la première syllabe du mot</div>
-                    <div class="level-badge">1 niveau</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('syllabe-fin')">
-                    <div class="game-icon">🏁</div>
-                    <div class="game-title">Syllabe de Fin</div>
-                    <div class="game-description">Trouve la dernière syllabe du mot</div>
-                    <div class="level-badge">1 niveau</div>
-                </div>
-            </div>
-
-            <!-- Section 4: Sons d'attaque et de fin -->
-            <div class="section-title">
-                <h2>🔍 Trouver les Sons</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('son-attaque')">
-                    <div class="game-icon">🎤</div>
-                    <div class="game-title">Son d'Attaque</div>
-                    <div class="game-description">Trouve le premier son du mot</div>
-                    <div class="level-badge">1 niveau</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('son-fin')">
-                    <div class="game-icon">🎧</div>
-                    <div class="game-title">Son de Fin</div>
-                    <div class="game-description">Trouve le dernier son du mot</div>
-                    <div class="level-badge">1 niveau</div>
-                </div>
-            </div>
-
-            <!-- Section 5: Lire des mots -->
-            <div class="section-title">
-                <h2>📝 Lire des Mots</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('lire-mots', 1)">
-                    <div class="game-icon">🌟</div>
-                    <div class="game-title">Mots Simples</div>
-                    <div class="game-description">Lis des mots de 2 syllabes faciles</div>
-                    <div class="level-badge">Niveau 1 - Facile</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('lire-mots', 2)">
-                    <div class="game-icon">⭐</div>
-                    <div class="game-title">Mots Variés</div>
-                    <div class="game-description">Lis des mots de 2 syllabes plus difficiles</div>
-                    <div class="level-badge">Niveau 2 - Moyen</div>
-                </div>
-            </div>
-
-            <!-- Section 6: Écrire des mots -->
-            <div class="section-title">
-                <h2>✍️ Écrire des Mots</h2>
-            </div>
-            <div class="games-grid">
-                <div class="game-card" onclick="startGame('ecrire-mots', 1)">
-                    <div class="game-icon">🧩</div>
-                    <div class="game-title">Mots à Reconstituer</div>
-                    <div class="game-description">Remets les lettres dans l'ordre (mots faciles)</div>
-                    <div class="level-badge">Niveau 1 - Débutant</div>
-                </div>
-
-                <div class="game-card" onclick="startGame('ecrire-mots', 2)">
-                    <div class="game-icon">🎨</div>
-                    <div class="game-title">Mots à Composer</div>
-                    <div class="game-description">Écris des mots avec les lettres mélangées</div>
-                    <div class="level-badge">Niveau 2 - Confirmé</div>
-                </div>
             </div>
         </div>
     </div>
@@ -448,7 +230,7 @@
             statistiques: {
                 tempsTotal: 0,
                 sessionsJouees: 0,
-                exercicesRealises: []
+                motsTravailes: []
             },
             resultatsParJeu: {}
         };
@@ -461,38 +243,60 @@
         // Gestion des élèves
         function loadStudents() {
             const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
-            const select = document.getElementById('studentSelect');
+            const studentsGrid = document.getElementById('studentsGrid');
             
-            // Vider les options existantes sauf la première
-            select.innerHTML = '<option value="">-- Choisir un prénom --</option>';
+            studentsGrid.innerHTML = '';
             
             Object.keys(students).forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                select.appendChild(option);
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                studentCard.onclick = () => selectStudent(name);
+                
+                studentCard.innerHTML = `
+                    <div class="student-card-avatar">${name.charAt(0)}</div>
+                    <div class="student-card-name">${name}</div>
+                `;
+                
+                studentsGrid.appendChild(studentCard);
             });
+        }
+
+        function selectStudent(studentName) {
+            studentName = studentName.charAt(0).toUpperCase() + studentName.slice(1);
+
+            let students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            
+            if (!students[studentName]) {
+                students[studentName] = {...defaultStudentData, nom: studentName};
+            } else {
+                students[studentName].derniereConnexion = new Date().toISOString().split('T')[0];
+            }
+            
+            localStorage.setItem('lecture_students', JSON.stringify(students));
+            currentStudent = students[studentName];
+            
+            // Rediriger vers le menu des jeux
+            goToGamesMenu();
         }
 
         function toggleNewStudent() {
             const input = document.getElementById('newStudentInput');
-            const select = document.getElementById('studentSelect');
+            const studentsGrid = document.getElementById('studentsGrid');
             const newStudentBtn = document.getElementById('newStudentBtn');
             const addStudentBtn = document.getElementById('addStudentBtn');
             
             if (input.style.display === 'none') {
                 input.style.display = 'block';
                 input.focus();
-                select.style.display = 'none';
+                studentsGrid.style.display = 'none';
                 newStudentBtn.textContent = 'Annuler';
                 addStudentBtn.style.display = 'inline-block';
             } else {
                 input.style.display = 'none';
-                select.style.display = 'block';
+                studentsGrid.style.display = 'grid';
                 input.value = '';
                 newStudentBtn.textContent = 'Nouveau prénom';
                 addStudentBtn.style.display = 'none';
-                select.selectedIndex = 0;
             }
         }
 
@@ -507,6 +311,7 @@
             }
 
             const cleanName = studentName.charAt(0).toUpperCase() + studentName.slice(1).toLowerCase();
+
             let students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
             
             if (students[cleanName]) {
@@ -524,117 +329,12 @@
             toggleNewStudent();
         }
 
-        function loginStudent() {
-            const select = document.getElementById('studentSelect');
-            const input = document.getElementById('newStudentInput');
-            
-            let studentName = '';
-            
-            if (input.style.display !== 'none' && input.value.trim()) {
-                studentName = input.value.trim();
-            } else if (select.style.display !== 'none' && select.value) {
-                studentName = select.value;
+        function goToGamesMenu() {
+            // Sauvegarder l'élève actuel et rediriger vers le menu des jeux
+            if (currentStudent) {
+                sessionStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+                window.location.href = 'menu-jeux.html';
             }
-            
-            if (!studentName) {
-                alert('Veuillez choisir un élève dans la liste ou créer un nouvel élève !');
-                return;
-            }
-
-            studentName = studentName.charAt(0).toUpperCase() + studentName.slice(1).toLowerCase();
-            let students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
-            
-            if (!students[studentName]) {
-                students[studentName] = {...defaultStudentData, nom: studentName};
-            } else {
-                students[studentName].derniereConnexion = new Date().toISOString().split('T')[0];
-            }
-            
-            localStorage.setItem('lecture_students', JSON.stringify(students));
-            currentStudent = students[studentName];
-            
-            input.style.display = 'none';
-            select.style.display = 'block';
-            input.value = '';
-            document.getElementById('newStudentBtn').textContent = 'Nouveau prénom';
-            document.getElementById('addStudentBtn').style.display = 'none';
-            
-            showMainMenu();
-        }
-
-        function logout() {
-            currentStudent = null;
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('userBar').classList.add('hidden');
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('teacherPanel').style.display = 'none';
-            loadStudents();
-        }
-
-        function showMainMenu() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('userBar').classList.remove('hidden');
-            document.getElementById('mainMenu').style.display = 'block';
-            updateUserDisplay();
-        }
-
-        function updateUserDisplay() {
-            if (!currentStudent) return;
-            
-            document.getElementById('userAvatar').textContent = currentStudent.nom.charAt(0);
-            document.getElementById('userName').textContent = `Bonjour ${currentStudent.nom} !`;
-            document.getElementById('userProgress').textContent = 
-                `${currentStudent.statistiques.sessionsJouees} session(s) jouées - ${Math.floor(currentStudent.statistiques.tempsTotal / 60)} minute(s)`;
-        }
-
-        // Lancement des jeux
-        function startGame(gameType, level = 1) {
-            if (!currentStudent) {
-                alert('Erreur : aucun élève connecté');
-                return;
-            }
-            
-            sessionStorage.setItem('currentStudent', JSON.stringify(currentStudent));
-            sessionStorage.setItem('gameLevel', level);
-            
-            const gameUrls = {
-                'sons-lettres': 'lecture-ex1.html',
-                'lire-syllabes': 'lecture-ex2.html',
-                'syllabe-attaque': 'lecture-ex3a.html',
-                'syllabe-fin': 'lecture-ex3b.html',
-                'son-attaque': 'lecture-ex4a.html',
-                'son-fin': 'lecture-ex4b.html',
-                'lire-mots': 'lecture-ex5.html',
-                'ecrire-mots': 'lecture-ex6.html'
-            };
-            
-            if (gameUrls[gameType]) {
-                window.location.href = gameUrls[gameType];
-            } else {
-                alert(`Jeu "${gameType}" non encore implémenté !`);
-            }
-        }
-
-        function updateStudentStats(gameType) {
-            if (!currentStudent) return;
-            
-            currentStudent.statistiques.sessionsJouees++;
-            currentStudent.derniereConnexion = new Date().toISOString().split('T')[0];
-            
-            if (!currentStudent.resultatsParJeu[gameType]) {
-                currentStudent.resultatsParJeu[gameType] = {
-                    partiesJouees: 0,
-                    dernierAcces: new Date().toISOString().split('T')[0]
-                };
-            }
-            
-            currentStudent.resultatsParJeu[gameType].partiesJouees++;
-            
-            let students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
-            students[currentStudent.nom] = currentStudent;
-            localStorage.setItem('lecture_students', JSON.stringify(students));
-            
-            updateUserDisplay();
         }
 
         // Fonctionnalités enseignant

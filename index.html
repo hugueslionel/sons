@@ -161,6 +161,56 @@
             display: none;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .modal-btn {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .modal-btn-danger {
+            background: #e17055;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -216,11 +266,29 @@
                 <!-- Les stats seront générées ici -->
             </div>
         </div>
+
+        <div id="alertModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <p id="modalMessage"></p>
+                <button class="modal-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeConfirmModal()">&times;</span>
+                <p id="confirmMessage"></p>
+                <button class="modal-btn" onclick="confirmModalYes()">Oui</button>
+                <button class="modal-btn modal-btn-danger" onclick="closeConfirmModal()">Non</button>
+            </div>
+        </div>
     </div>
 
     <script>
         // Variables globales
         let currentStudent = null;
+        let confirmCallback = null;
         
         // Données par défaut pour les élèves
         const defaultStudentData = {
@@ -238,6 +306,90 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             loadStudents();
+        });
+
+        // Gestion des modales
+        function showAlert(message, callback) {
+            const modal = document.getElementById('alertModal');
+            const messageEl = document.getElementById('modalMessage');
+            messageEl.textContent = message;
+            modal.style.display = 'block';
+            setTimeout(() => {
+                const okBtn = modal.querySelector('.modal-btn');
+                if (okBtn) okBtn.focus();
+            }, 100);
+            window.currentCallback = callback;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('alertModal');
+            modal.style.display = 'none';
+            if (window.currentCallback) {
+                window.currentCallback();
+                window.currentCallback = null;
+            }
+            setTimeout(() => {
+                const input = document.getElementById('newStudentInput');
+                if (input && input.style.display !== 'none') {
+                    input.focus();
+                }
+            }, 150);
+        }
+
+        function showConfirm(message, onYes) {
+            const modal = document.getElementById('confirmModal');
+            const messageEl = document.getElementById('confirmMessage');
+            messageEl.textContent = message;
+            modal.style.display = 'block';
+            confirmCallback = onYes;
+            setTimeout(() => {
+                const yesBtn = modal.querySelector('.modal-btn:not(.modal-btn-danger)');
+                if (yesBtn) yesBtn.focus();
+            }, 100);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'none';
+            confirmCallback = null;
+            setTimeout(() => {
+                const input = document.getElementById('newStudentInput');
+                if (input && input.style.display !== 'none') {
+                    input.focus();
+                }
+            }, 150);
+        }
+
+        function confirmModalYes() {
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'none';
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            setTimeout(() => {
+                const input = document.getElementById('newStudentInput');
+                if (input && input.style.display !== 'none') {
+                    input.focus();
+                }
+            }, 150);
+        }
+
+        window.onclick = function(event) {
+            const alertModal = document.getElementById('alertModal');
+            const confirmModal = document.getElementById('confirmModal');
+            if (event.target === alertModal) {
+                closeModal();
+            } else if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+                closeConfirmModal();
+            }
         });
 
         // Gestion des élèves
@@ -275,7 +427,6 @@
             localStorage.setItem('lecture_students', JSON.stringify(students));
             currentStudent = students[studentName];
             
-            // Rediriger vers le menu des jeux
             goToGamesMenu();
         }
 
@@ -305,7 +456,7 @@
             const studentName = input.value.trim();
             
             if (!studentName) {
-                alert('Veuillez saisir un prénom !');
+                showAlert('Veuillez saisir un prénom !');
                 input.focus();
                 return;
             }
@@ -315,7 +466,7 @@
             let students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
             
             if (students[cleanName]) {
-                alert(`L'élève "${cleanName}" existe déjà dans la liste !`);
+                showAlert(`L'élève "${cleanName}" existe déjà dans la liste !`);
                 input.focus();
                 return;
             }
@@ -323,14 +474,14 @@
             students[cleanName] = {...defaultStudentData, nom: cleanName};
             localStorage.setItem('lecture_students', JSON.stringify(students));
 
-            alert(`Élève "${cleanName}" ajouté avec succès !`);
-            input.value = '';
-            loadStudents();
-            toggleNewStudent();
+            showAlert(`Élève "${cleanName}" ajouté avec succès !`, () => {
+                input.value = '';
+                loadStudents();
+                toggleNewStudent();
+            });
         }
 
         function goToGamesMenu() {
-            // Sauvegarder l'élève actuel et rediriger vers le menu des jeux
             if (currentStudent) {
                 sessionStorage.setItem('currentStudent', JSON.stringify(currentStudent));
                 window.location.href = 'menu-jeux.html';
@@ -397,11 +548,12 @@
         }
 
         function clearAllData() {
-            if (confirm('⚠️ ATTENTION !\n\nCela va supprimer TOUTES les données des élèves.\nÊtes-vous sûr(e) de vouloir continuer ?')) {
+            showConfirm('⚠️ ATTENTION !\n\nCela va supprimer TOUTES les données des élèves.\nÊtes-vous sûr(e) de vouloir continuer ?', () => {
                 localStorage.removeItem('lecture_students');
-                alert('Toutes les données ont été supprimées.');
-                location.reload();
-            }
+                showAlert('Toutes les données ont été supprimées.', () => {
+                    location.reload();
+                });
+            });
         }
     </script>
 </body>

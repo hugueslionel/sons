@@ -156,6 +156,7 @@
             font-weight: bold;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
         }
 
         .sound-btn {
@@ -179,6 +180,13 @@
             transform: scale(0.95);
         }
 
+        .instruction-text {
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         .choices-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -198,6 +206,7 @@
             font-weight: bold;
             color: #2d3436;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
         }
 
         .choice-btn:hover:not(:disabled) {
@@ -382,7 +391,7 @@
 
         <div id="gameBoard" class="game-board">
             <div class="syllable-display">
-                <div class="syllable-text" id="syllableText">?</div>
+                <div class="instruction-text">Écoute bien la syllabe :</div>
                 <button class="sound-btn" onclick="playCurrentSound()">🔊 Écouter la syllabe</button>
             </div>
 
@@ -448,6 +457,7 @@
         let currentLevelNumber = null;
         let currentQuestionIndex = 0;
         let shuffledSyllables = [];
+        let currentCorrectSyllable = null;
         let score = 0;
         let correctAnswers = 0;
         let errors = 0;
@@ -549,13 +559,11 @@
             }
 
             isProcessing = false;
-            const currentSyllable = shuffledSyllables[currentQuestionIndex];
-            
-            document.getElementById('syllableText').textContent = currentSyllable;
+            currentCorrectSyllable = shuffledSyllables[currentQuestionIndex];
             
             playCurrentSound();
             
-            generateChoices(currentSyllable);
+            generateChoices(currentCorrectSyllable);
             
             updateProgress();
         }
@@ -582,16 +590,16 @@
 
         function checkAnswer(selectedSyllable, correctSyllable, btnElement) {
             if (isProcessing) return;
-            isProcessing = true;
-            
-            const allButtons = document.querySelectorAll('.choice-btn');
-            allButtons.forEach(btn => btn.disabled = true);
             
             if (selectedSyllable === correctSyllable) {
+                isProcessing = true;
                 btnElement.classList.add('correct');
                 correctAnswers++;
                 score += 10;
                 updateScore();
+                
+                const allButtons = document.querySelectorAll('.choice-btn');
+                allButtons.forEach(btn => btn.disabled = true);
                 
                 playSyllableSound(correctSyllable);
                 
@@ -601,27 +609,18 @@
                 }, 1500);
             } else {
                 btnElement.classList.add('wrong');
+                btnElement.disabled = true;
                 errors++;
                 
-                allButtons.forEach(btn => {
-                    if (btn.textContent === correctSyllable) {
-                        btn.classList.add('correct');
-                    }
-                });
-                
-                playSyllableSound(correctSyllable);
-                
                 setTimeout(() => {
-                    currentQuestionIndex++;
-                    showNextQuestion();
-                }, 2000);
+                    btnElement.classList.remove('wrong');
+                }, 500);
             }
         }
 
         function playCurrentSound() {
-            const syllable = document.getElementById('syllableText').textContent;
-            if (syllable && syllable !== '?') {
-                playSyllableSound(syllable);
+            if (currentCorrectSyllable) {
+                playSyllableSound(currentCorrectSyllable);
             }
         }
 
@@ -722,6 +721,7 @@
             currentLevelNumber = null;
             currentQuestionIndex = 0;
             shuffledSyllables = [];
+            currentCorrectSyllable = null;
             score = 0;
             correctAnswers = 0;
             errors = 0;

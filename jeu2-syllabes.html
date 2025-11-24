@@ -561,11 +561,14 @@
             isProcessing = false;
             currentCorrectSyllable = shuffledSyllables[currentQuestionIndex];
             
-            playCurrentSound();
-            
             generateChoices(currentCorrectSyllable);
             
             updateProgress();
+
+            // Délai de 800ms avant de jouer automatiquement le son
+            setTimeout(() => {
+                playCurrentSound();
+            }, 800);
         }
 
         function generateChoices(correctSyllable) {

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sons des Lettres</title>
+    <style>
+        @font-face {
+            font-family: 'ScriptEcole2';
+            src: url('fonts/ScriptEcole2.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            min-height: 100vh;
+            color: #2d3436;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .game-title h1 {
+            font-size: 2em;
+            color: #2d3436;
+        }
+
+        .game-info {
+            text-align: right;
+            font-size: 1.1em;
+        }
+
+        .score {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .progress-text {
+            color: #6c5ce7;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .level-selector {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-selector h2 {
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .level-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .level-btn {
+            background: #a29bfe;
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .level-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(162, 155, 254, 0.4);
+        }
+
+        .level-btn.easy { background: #00b894; }
+        .level-btn.medium { background: #fdcb6e; color: #2d3436; }
+        
+        .level-btn:disabled {
+            background: #b2bec3;
+            color: #636e72;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .level-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .lock-icon {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .game-board {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sound-display {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .instruction-text {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sound-btn {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .sound-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.5);
+        }
+
+        .sound-btn:active {
+            transform: scale(0.95);
+        }
+
+        .letters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .letter-btn {
+            font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
+            background: white;
+            border: 4px solid #a29bfe;
+            padding: 25px 15px;
+            font-size: 3em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #2d3436;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+        }
+
+        .letter-btn.small-text {
+            font-size: 2em;
+        }
+
+        .letter-btn:hover:not(.found) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(162, 155, 254, 0.3);
+            border-color: #6c5ce7;
+        }
+
+        .letter-btn.found {
+            background: #dfe6e9;
+            border-color: #b2bec3;
+            cursor: default;
+        }
+
+        .letter-btn.correct {
+            animation: shakeCorrect 0.6s ease-in-out;
+            background: #00b894;
+            border-color: #00b894;
+            color: white;
+        }
+
+        .letter-btn.wrong {
+            animation: shakeWrong 0.5s ease-in-out;
+            background: #e17055;
+            border-color: #e17055;
+            color: white;
+        }
+
+        @keyframes shakeCorrect {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-10px) scale(1.05); }
+            50% { transform: translateX(10px) scale(1.1); }
+            75% { transform: translateX(-10px) scale(1.05); }
+        }
+
+        @keyframes shakeWrong {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-15px); }
+            40% { transform: translateX(15px); }
+            60% { transform: translateX(-15px); }
+            80% { transform: translateX(15px); }
+        }
+
+        .bravo-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 184, 148, 0.95);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            font-size: 3em;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-secondary {
+            background: #a29bfe;
+        }
+
+        .btn-danger {
+            background: #e17055;
+        }
+
+        .game-over {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .victory-animation {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .stats h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .letters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 10px;
+            }
+
+            .letter-btn {
+                font-size: 2em;
+                padding: 15px 10px;
+            }
+
+            .letter-btn.small-text {
+                font-size: 1.5em;
+            }
+
+            .bravo-message {
+                font-size: 2em;
+                padding: 30px 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .letter-btn {
+                font-size: 1.8em;
+            }
+
+            .letter-btn.small-text {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="game-title">
+                <span>🔊</span>
+                <h1>Sons des Lettres</h1>
+            </div>
+            <div class="game-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="progress-text">Trouvés: <span id="currentQuestion">0</span>/<span id="totalQuestions">0</span></div>
+            </div>
+        </div>
+
+        <div id="levelSelector" class="level-selector">
+            <h2>🎯 Choisis ton niveau de difficulté</h2>
+            <div class="level-buttons">
+                <button class="level-btn easy" onclick="startLevel(1)" id="level1Btn">
+                    <div>🟢 Niveau 1 - Facile</div>
+                    <small>Les lettres de l'alphabet<br>(24 sons à découvrir)</small>
+                </button>
+                <button class="level-btn medium" onclick="startLevel(2)" id="level2Btn" disabled>
+                    <span class="lock-icon">🔒</span>
+                    <div>🟡 Niveau 2 - Moyen</div>
+                    <small>Les sons complexes<br>(ch, ou, in, an/en, ai...)</small>
+                </button>
+            </div>
+            <div class="game-controls" style="margin-top: 30px;">
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
+            </div>
+        </div>
+
+        <div id="gameBoard" class="game-board">
+            <div class="sound-display">
+                <div class="instruction-text">Écoute bien le son et clique sur la bonne lettre :</div>
+                <button class="sound-btn" onclick="playCurrentSound()">🔊 Écouter le son</button>
+            </div>
+
+            <div class="letters-grid" id="lettersGrid"></div>
+
+            <div class="game-controls">
+                <button class="btn" onclick="restartGame()">🔄 Recommencer</button>
+                <button class="btn btn-secondary" onclick="backToLevels()">📋 Changer de niveau</button>
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
+            </div>
+        </div>
+
+        <div id="gameOver" class="game-over">
+            <div class="victory-animation">🎉</div>
+            <h2>Félicitations !</h2>
+            <p>Tu as trouvé tous les sons !</p>
+            
+            <div class="stats">
+                <h3>📊 Tes résultats</h3>
+                <div class="stat-item">
+                    <span>Sons trouvés:</span>
+                    <span id="finalCorrect">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Erreurs:</span>
+                    <span id="finalErrors">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Score final:</span>
+                    <span id="finalScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Réussite:</span>
+                    <span id="finalPercentage">0%</span>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn" onclick="restartGame()">🔄 Rejouer</button>
+                <button class="btn btn-secondary" onclick="backToLevels()">📋 Autres niveaux</button>
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
+            </div>
+        </div>
+
+        <div id="bravoMessage" class="bravo-message">
+            🎉 BRAVO ! 🎉
+        </div>
+    </div>
+
+    <script>
+        const LEVELS = {
+            1: {
+                name: "Facile",
+                items: [
+                    { display: 'a', sound: 'a' },
+                    { display: 'b', sound: 'b' },
+                    { display: 'c', sound: 'c' },
+                    { display: 'd', sound: 'd' },
+                    { display: 'e', sound: 'e' },
+                    { display: 'é', sound: 'é' },
+                    { display: 'f', sound: 'f' },
+                    { display: 'g', sound: 'g' },
+                    { display: 'i', sound: 'i' },
+                    { display: 'j', sound: 'j' },
+                    { display: 'k', sound: 'k' },
+                    { display: 'l', sound: 'l' },
+                    { display: 'm', sound: 'm' },
+                    { display: 'n', sound: 'n' },
+                    { display: 'o', sound: 'o' },
+                    { display: 'p', sound: 'p' },
+                    { display: 'q', sound: 'q' },
+                    { display: 'r', sound: 'r' },
+                    { display: 's', sound: 's' },
+                    { display: 't', sound: 't' },
+                    { display: 'u', sound: 'u' },
+                    { display: 'v', sound: 'v' },
+                    { display: 'y', sound: 'y' },
+                    { display: 'z', sound: 'z' }
+                ],
+                soundFolder: 'phonemes'
+            },
+            2: {
+                name: "Moyen",
+                items: [
+                    { display: 'ch', sound: 'ch' },
+                    { display: 'ou', sound: 'ou' },
+                    { display: 'in', sound: 'in' },
+                    { display: 'an/en', sound: 'an' },
+                    { display: 'ai', sound: 'ai' },
+                    { display: 'on', sound: 'on' },
+                    { display: 'oi', sound: 'oi' },
+                    { display: 'ei', sound: 'ei' },
+                    { display: 'eu', sound: 'eu' },
+                    { display: 'gn', sound: 'gn' }
+                ],
+                soundFolder: 'phonemes'
+            }
+        };
+
+        let currentLevel = null;
+        let currentLevelNumber = null;
+        let shuffledItems = [];
+        let currentItemIndex = 0;
+        let currentCorrectItem = null;
+        let foundItems = [];
+        let score = 0;
+        let errors = 0;
+        let isProcessing = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showLevelSelector();
+            updateLevelButtons();
+        });
+
+        function showLevelSelector() {
+            document.getElementById('levelSelector').style.display = 'block';
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            resetGame();
+            updateLevelButtons();
+        }
+        
+        function updateLevelButtons() {
+            const progress = getSonsProgress();
+            
+            document.getElementById('level1Btn').disabled = false;
+            
+            const level2Btn = document.getElementById('level2Btn');
+            if (progress.level1Completed) {
+                level2Btn.disabled = false;
+                level2Btn.querySelector('.lock-icon')?.remove();
+            } else {
+                level2Btn.disabled = true;
+                if (!level2Btn.querySelector('.lock-icon')) {
+                    const lockIcon = document.createElement('span');
+                    lockIcon.className = 'lock-icon';
+                    lockIcon.textContent = '🔒';
+                    level2Btn.insertBefore(lockIcon, level2Btn.firstChild);
+                }
+            }
+        }
+        
+        function getSonsProgress() {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+            
+            if (currentStudentName && students[currentStudentName]) {
+                const sonsStats = students[currentStudentName].resultatsParJeu['sons-lettres'] || {};
+                return {
+                    level1Completed: sonsStats.level1Completed || false
+                };
+            }
+            
+            return {
+                level1Completed: false
+            };
+        }
+
+        function startLevel(level) {
+            currentLevel = LEVELS[level];
+            if (!currentLevel) return;
+            
+            currentLevelNumber = level;
+            
+            shuffledItems = [...currentLevel.items];
+            shuffleArray(shuffledItems);
+            
+            currentItemIndex = 0;
+            foundItems = [];
+            score = 0;
+            errors = 0;
+            
+            updateScore();
+            updateProgress();
+            
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameBoard').style.display = 'block';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            createLettersGrid();
+            showNextSound();
+        }
+
+        function createLettersGrid() {
+            const grid = document.getElementById('lettersGrid');
+            grid.innerHTML = '';
+            
+            currentLevel.items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'letter-btn';
+                if (item.display.length > 1) {
+                    btn.classList.add('small-text');
+                }
+                btn.textContent = item.display;
+                btn.dataset.display = item.display;
+                btn.dataset.sound = item.sound;
+                btn.onclick = () => checkAnswer(item, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function showNextSound() {
+            if (currentItemIndex >= shuffledItems.length) {
+                endGame();
+                return;
+            }
+
+            isProcessing = false;
+            currentCorrectItem = shuffledItems[currentItemIndex];
+            
+            playCurrentSound();
+            
+            updateProgress();
+        }
+
+        function checkAnswer(selectedItem, btnElement) {
+            if (isProcessing || foundItems.includes(selectedItem.display)) return;
+            
+            if (selectedItem.sound === currentCorrectItem.sound) {
+                isProcessing = true;
+                btnElement.classList.add('correct');
+                foundItems.push(selectedItem.display);
+                score += 10;
+                updateScore();
+                
+                playSound(currentCorrectItem.sound);
+                
+                showBravoMessage();
+                
+                setTimeout(() => {
+                    btnElement.classList.remove('correct');
+                    btnElement.classList.add('found');
+                    currentItemIndex++;
+                    showNextSound();
+                }, 1000);
+            } else {
+                btnElement.classList.add('wrong');
+                errors++;
+                
+                setTimeout(() => {
+                    btnElement.classList.remove('wrong');
+                }, 500);
+            }
+        }
+
+        function showBravoMessage() {
+            const bravoMsg = document.getElementById('bravoMessage');
+            bravoMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                bravoMsg.style.display = 'none';
+            }, 1000);
+        }
+
+        function playCurrentSound() {
+            if (currentCorrectItem) {
+                playSound(currentCorrectItem.sound);
+            }
+        }
+
+        function playSound(soundName) {
+            try {
+                const audio = new Audio(`sons/${currentLevel.soundFolder}/${soundName.toLowerCase()}.mp3`);
+                audio.volume = 0.8;
+                audio.play().catch(error => {
+                    console.log(`Impossible de jouer le son pour ${soundName}:`, error);
+                });
+            } catch (error) {
+                console.log(`Erreur lors du chargement du son pour ${soundName}:`, error);
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function updateProgress() {
+            document.getElementById('currentQuestion').textContent = foundItems.length;
+            document.getElementById('totalQuestions').textContent = currentLevel.items.length;
+        }
+
+        function endGame() {
+            const total = currentLevel.items.length;
+            const percentage = Math.round((total / total) * 100);
+            
+            document.getElementById('finalCorrect').textContent = total;
+            document.getElementById('finalErrors').textContent = errors;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalPercentage').textContent = percentage + '%';
+            
+            saveGameStats(total, errors, score, percentage);
+            
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'block';
+            
+            setTimeout(() => {
+                showLevelSelector();
+            }, 5000);
+        }
+
+        function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+            
+            if (currentStudentName && students[currentStudentName]) {
+                const student = students[currentStudentName];
+                
+                student.statistiques.sessionsJouees++;
+                
+                if (!student.resultatsParJeu['sons-lettres']) {
+                    student.resultatsParJeu['sons-lettres'] = {
+                        partiesJouees: 0,
+                        meilleurScore: 0,
+                        totalCorrect: 0,
+                        totalErrors: 0,
+                        level1Completed: false
+                    };
+                }
+                
+                const sonsStats = student.resultatsParJeu['sons-lettres'];
+                sonsStats.partiesJouees++;
+                sonsStats.meilleurScore = Math.max(sonsStats.meilleurScore, finalScore);
+                sonsStats.totalCorrect += correct;
+                sonsStats.totalErrors += wrongAnswers;
+                
+                if (currentLevelNumber === 1 && percentage >= 80) {
+                    sonsStats.level1Completed = true;
+                }
+                
+                localStorage.setItem('lecture_students', JSON.stringify(students));
+            }
+        }
+
+        function getCurrentStudentName() {
+            try {
+                const currentStudent = JSON.parse(sessionStorage.getItem('currentStudent'));
+                return currentStudent ? currentStudent.nom : null;
+            } catch (error) {
+                console.log('Erreur lors de la récupération de l\'élève:', error);
+                return null;
+            }
+        }
+
+        function resetGame() {
+            currentLevel = null;
+            currentLevelNumber = null;
+            currentItemIndex = 0;
+            shuffledItems = [];
+            currentCorrectItem = null;
+            foundItems = [];
+            score = 0;
+            errors = 0;
+            isProcessing = false;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('currentQuestion').textContent = '0';
+            document.getElementById('totalQuestions').textContent = '0';
+        }
+
+        function restartGame() {
+            if (currentLevelNumber) {
+                startLevel(currentLevelNumber);
+            }
+        }
+
+        function backToLevels() {
+            showLevelSelector();
+        }
+
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

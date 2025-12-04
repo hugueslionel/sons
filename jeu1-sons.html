@@ -676,7 +676,7 @@
 
         function playSound(soundName) {
             try {
-                const audio = new Audio(`sons/${currentLevel.soundFolder}/${soundName.toLowerCase()}.mp3`);
+                const audio = new Audio(`phonemes/${soundName.toLowerCase()}.mp3`);
                 audio.volume = 0.8;
                 audio.play().catch(error => {
                     console.log(`Impossible de jouer le son pour ${soundName}:`, error);

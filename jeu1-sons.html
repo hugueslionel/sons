@@ -876,6 +876,10 @@
             document.getElementById('gameOver').style.display = 'block';
             
             // Ne pas réinitialiser immédiatement, laisser l'utilisateur voir ses résultats
+             // Retour automatique après 5 secondes
+            setTimeout(() => {
+                showLevelSelector();
+            }, 5000);
         }
 
         function saveGameStats(correct, wrongAnswers, finalScore, percentage) {

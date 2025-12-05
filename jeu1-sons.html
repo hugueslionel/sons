@@ -692,7 +692,7 @@
 
             isProcessing = false;
             currentCorrectItem = shuffledItems[currentItemIndex];
-            
+    
             // Réactiver tous les boutons
             const letterButtons = document.querySelectorAll('.letter-btn');
             letterButtons.forEach(btn => {
@@ -701,10 +701,14 @@
                     btn.classList.remove('found');
                 }
             });
-            
-            playCurrentSound();
+    
             updateProgress();
-            
+    
+            // Délai de 500ms avant de jouer le son
+            setTimeout(() => {
+                playCurrentSound();
+            }, 500);
+    
             // Réactiver le bouton de son
             document.getElementById('soundBtn').disabled = false;
         }

@@ -669,8 +669,13 @@
         function createLettersGrid() {
             const grid = document.getElementById('lettersGrid');
             grid.innerHTML = '';
-            
-            currentLevel.items.forEach(item => {
+    
+            // Créer une copie du tableau items et le mélanger
+            const shuffledItems = [...currentLevel.items];
+            shuffleArray(shuffledItems);
+    
+            // Utiliser le tableau mélangé pour créer les boutons
+            shuffledItems.forEach(item => {
                 const btn = document.createElement('button');
                 btn.className = 'letter-btn';
                 if (item.display.length > 1) {
@@ -715,14 +720,17 @@
 
         function checkAnswer(selectedItem, btnElement) {
             if (isProcessing || foundItems.includes(selectedItem.display)) return;
-    
+
             isProcessing = true;
-    
+
             // Désactiver tous les boutons pendant le traitement
             const letterButtons = document.querySelectorAll('.letter-btn');
             letterButtons.forEach(btn => btn.disabled = true);
+
+            // Trouver l'item correspondant dans le tableau d'origine pour la comparaison
+            const originalItem = currentLevel.items.find(item => item.display === selectedItem.display);
     
-            if (selectedItem.sound === currentCorrectItem.sound) {
+            if (originalItem && originalItem.sound === currentCorrectItem.sound) {
                 // Réponse correcte
                 btnElement.classList.add('correct');
                 foundItems.push(selectedItem.display);
@@ -737,9 +745,6 @@
                 // Mettre à jour immédiatement le compteur de progression
                 document.getElementById('currentQuestion').textContent = foundItems.length;
         
-                // Afficher le feedback
-                //showFeedback(`Excellent ! +${totalScore} points`, 'good');
-        
                 playSound(currentCorrectItem.sound);
                 showBravoMessage();
         
@@ -747,9 +752,6 @@
                     btnElement.classList.remove('correct');
                     btnElement.classList.add('found');
                     btnElement.disabled = true;
-            
-                    // Masquer le feedback
-                    document.getElementById('feedbackMessage').style.display = 'none';
             
                     currentItemIndex++;
                     // Ne pas appeler showNextSound() si c'était le dernier son
@@ -771,8 +773,6 @@
                 score = Math.max(0, score - 5);
                 updateScore();
         
-                //showFeedback(`Essaie encore !`, 'bad');
-        
                 setTimeout(() => {
                     btnElement.classList.remove('wrong');
             
@@ -783,16 +783,10 @@
                         }
                     });
             
-                    // Masquer le feedback après 1 seconde
-                    setTimeout(() => {
-                        document.getElementById('feedbackMessage').style.display = 'none';
-                    }, 1000);
-            
                     isProcessing = false;
                 }, 1000);
             }
         }
-
         function showFeedback(message, type) {
             const feedbackElement = document.getElementById('feedbackMessage');
             feedbackElement.textContent = message;

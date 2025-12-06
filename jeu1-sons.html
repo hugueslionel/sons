@@ -714,84 +714,84 @@
         }
 
         function checkAnswer(selectedItem, btnElement) {
-    if (isProcessing || foundItems.includes(selectedItem.display)) return;
+            if (isProcessing || foundItems.includes(selectedItem.display)) return;
     
-    isProcessing = true;
+            isProcessing = true;
     
-    // Désactiver tous les boutons pendant le traitement
-    const letterButtons = document.querySelectorAll('.letter-btn');
-    letterButtons.forEach(btn => btn.disabled = true);
+            // Désactiver tous les boutons pendant le traitement
+            const letterButtons = document.querySelectorAll('.letter-btn');
+            letterButtons.forEach(btn => btn.disabled = true);
     
-    if (selectedItem.sound === currentCorrectItem.sound) {
-        // Réponse correcte
-        btnElement.classList.add('correct');
-        foundItems.push(selectedItem.display);
+            if (selectedItem.sound === currentCorrectItem.sound) {
+                // Réponse correcte
+                btnElement.classList.add('correct');
+                foundItems.push(selectedItem.display);
         
-        // Calcul du score avec bonus de temps
-        const baseScore = 10;
-        const bonus = Math.floor(timeBonus / 10);
-        const totalScore = baseScore + bonus;
-        score += totalScore;
-        updateScore();
+                // Calcul du score avec bonus de temps
+                const baseScore = 10;
+                const bonus = Math.floor(timeBonus / 10);
+                const totalScore = baseScore + bonus;
+                score += totalScore;
+                updateScore();
         
-        // Mettre à jour immédiatement le compteur de progression
-        document.getElementById('currentQuestion').textContent = foundItems.length;
+                // Mettre à jour immédiatement le compteur de progression
+                document.getElementById('currentQuestion').textContent = foundItems.length;
         
-        // Afficher le feedback
-        showFeedback(`Excellent ! +${totalScore} points`, 'good');
+                // Afficher le feedback
+                showFeedback(`Excellent ! +${totalScore} points`, 'good');
         
-        playSound(currentCorrectItem.sound);
-        showBravoMessage();
+                playSound(currentCorrectItem.sound);
+                showBravoMessage();
         
-        setTimeout(() => {
-            btnElement.classList.remove('correct');
-            btnElement.classList.add('found');
-            btnElement.disabled = true;
-            
-            // Masquer le feedback
-            document.getElementById('feedbackMessage').style.display = 'none';
-            
-            currentItemIndex++;
-            // Ne pas appeler showNextSound() si c'était le dernier son
-            if (currentItemIndex < shuffledItems.length) {
-                showNextSound();
-            } else {
-                // Attendre un peu puis terminer le jeu
                 setTimeout(() => {
-                    endGame();
-                }, 500);
+                    btnElement.classList.remove('correct');
+                    btnElement.classList.add('found');
+                    btnElement.disabled = true;
+            
+                    // Masquer le feedback
+                    document.getElementById('feedbackMessage').style.display = 'none';
+            
+                    currentItemIndex++;
+                    // Ne pas appeler showNextSound() si c'était le dernier son
+                    if (currentItemIndex < shuffledItems.length) {
+                        showNextSound();
+                    } else {
+                        // Attendre un peu puis terminer le jeu
+                        setTimeout(() => {
+                            endGame();
+                        }, 500);
+                    }
+                }, 1500);
+            } else {
+                // Réponse incorrecte
+                btnElement.classList.add('wrong');
+                errors++;
+        
+                // Pénalité de score
+                score = Math.max(0, score - 5);
+                updateScore();
+        
+                showFeedback(`Essaie encore !`, 'bad');
+        
+                setTimeout(() => {
+                    btnElement.classList.remove('wrong');
+            
+                    // Réactiver les boutons pour un nouvel essai
+                    letterButtons.forEach(btn => {
+                        if (!foundItems.includes(btn.dataset.display)) {
+                            btn.disabled = false;
+                        }
+                    });
+            
+                    // Masquer le feedback après 1 seconde
+                    setTimeout(() => {
+                        document.getElementById('feedbackMessage').style.display = 'none';
+                    }, 1000);
+            
+                    isProcessing = false;
+                }, 1000);
             }
-        }, 1500);
-    } else {
-        // Réponse incorrecte
-        btnElement.classList.add('wrong');
-        errors++;
-        
-        // Pénalité de score
-        score = Math.max(0, score - 5);
-        updateScore();
-        
-        showFeedback(`Essaie encore !`, 'bad');
-        
-        setTimeout(() => {
-            btnElement.classList.remove('wrong');
-            
-            // Réactiver les boutons pour un nouvel essai
-            letterButtons.forEach(btn => {
-                if (!foundItems.includes(btn.dataset.display)) {
-                    btn.disabled = false;
-                }
-            });
-            
-            // Masquer le feedback après 1 seconde
-            setTimeout(() => {
-                document.getElementById('feedbackMessage').style.display = 'none';
-            }, 1000);
-            
-            isProcessing = false;
-        }, 1000);
-    }
-}
+        }
 
         function showFeedback(message, type) {
             const feedbackElement = document.getElementById('feedbackMessage');

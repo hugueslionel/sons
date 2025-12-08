@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Écrire des mots - Niveau 1</title>
+    <style>
+        @font-face {
+            font-family: 'ScriptEcole2';
+            src: url('fonts/ScriptEcole2.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'ScriptEcole2', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .level-info {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* Alphabet */
+        .alphabet-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 10px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .letter-btn {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            font-size: 2em;
+            font-family: 'ScriptEcole2', Arial, sans-serif;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+        }
+
+        .letter-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .letter-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Zone d'exercice */
+        .exercise-area {
+            background: #fff8e1;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .word-image {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .word-image img {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .word-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .letter-box {
+            width: 70px;
+            height: 80px;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-family: 'ScriptEcole2', Arial, sans-serif;
+            background: white;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .letter-box.filled {
+            background: #e8eaf6;
+        }
+
+        .letter-box.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+        }
+
+        .letter-box.locked {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+
+        /* Animations */
+        @keyframes shake-green {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes shake-red {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .shake-green {
+            animation: shake-green 0.5s;
+            background: #c8e6c9 !important;
+        }
+
+        .shake-red {
+            animation: shake-red 0.5s;
+            background: #ffcdd2 !important;
+        }
+
+        .bravo-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: #4caf50;
+            color: white;
+            font-size: 4em;
+            padding: 40px 80px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: bravoAnim 1s ease-out;
+        }
+
+        @keyframes bravoAnim {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Boutons de contrôle */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-family: 'ScriptEcole2', Arial, sans-serif;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        /* Écran de fin */
+        .end-screen {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .end-screen.active {
+            display: block;
+        }
+
+        .end-title {
+            font-size: 3em;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .end-stats {
+            font-size: 1.5em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .stars {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .letter-btn {
+                font-size: 1.5em;
+                padding: 10px;
+            }
+
+            .letter-box {
+                width: 50px;
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .alphabet-grid {
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Écrire des mots</h1>
+            <div class="level-info">Niveau 1</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Mot</div>
+                <div class="stat-value" id="wordNumber">1/15</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Erreurs</div>
+                <div class="stat-value" id="errors">0</div>
+            </div>
+        </div>
+
+        <div id="gameArea">
+            <div class="alphabet-container">
+                <div class="alphabet-grid" id="alphabetGrid"></div>
+            </div>
+
+            <div class="exercise-area">
+                <div class="word-image">
+                    <img id="wordImage" src="" alt="Image du mot">
+                </div>
+                <div class="word-boxes" id="wordBoxes"></div>
+            </div>
+        </div>
+
+        <div class="end-screen" id="endScreen">
+            <div class="end-title">🎉 Bravo !</div>
+            <div class="stars">⭐⭐⭐</div>
+            <div class="end-stats" id="endStats"></div>
+            <p style="color: #999; margin-top: 20px;">Retour au menu dans <span id="countdown">5</span> secondes...</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="restartLevel()">🔄 Recommencer</button>
+            <button class="btn btn-secondary" onclick="changeLevel()">📊 Changer niveau</button>
+            <button class="btn btn-primary" onclick="goToMenu()">🏠 Menu jeux</button>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            { word: 'MUR', image: 'mots/mur.jpeg', lockedLetters: [] },
+            { word: 'VIS', image: 'mots/vis.jpeg', lockedLetters: [] },
+            { word: 'FIL', image: 'mots/fil.jpeg', lockedLetters: [] },
+            { word: 'SAC', image: 'mots/sac.jpeg', lockedLetters: [] },
+            { word: 'BOL', image: 'mots/bol.jpeg', lockedLetters: [] },
+            { word: 'LAC', image: 'mots/lac.jpeg', lockedLetters: [] },
+            { word: 'ÉPI', image: 'mots/épi.jpeg', lockedLetters: [] },
+            { word: 'ÂNE', image: 'mots/âne.jpeg', lockedLetters: [] },
+            { word: 'AMI', image: 'mots/ami.jpeg', lockedLetters: [] },
+            { word: 'LAMA', image: 'mots/lama.jpeg', lockedLetters: [] },
+            { word: 'VÉLO', image: 'mots/vélo.jpeg', lockedLetters: [] },
+            { word: 'LOTO', image: 'mots/loto.jpeg', lockedLetters: [] },
+            { word: 'ROBOT', image: 'mots/robot.jpeg', lockedLetters: [4] }, // T muet
+            { word: 'ZÉRO', image: 'mots/zéro.jpeg', lockedLetters: [] },
+            { word: 'BRAS', image: 'mots/bras.jpeg', lockedLetters: [3] } // S muet
+        ];
+
+        const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Â', 'É'];
+
+        let currentWordIndex = 0;
+        let userInput = [];
+        let score = 0;
+        let errors = 0;
+        let isChecking = false;
+
+        function initAlphabet() {
+            const grid = document.getElementById('alphabetGrid');
+            grid.innerHTML = '';
+            
+            alphabet.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.className = 'letter-btn';
+                btn.textContent = letter;
+                btn.onclick = () => selectLetter(letter, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function loadWord() {
+            if (currentWordIndex >= words.length) {
+                showEndScreen();
+                return;
+            }
+
+            const currentWord = words[currentWordIndex];
+            document.getElementById('wordImage').src = currentWord.image;
+            document.getElementById('wordNumber').textContent = `${currentWordIndex + 1}/${words.length}`;
+            
+            userInput = new Array(currentWord.word.length).fill('');
+            
+            // Pré-remplir les lettres verrouillées
+            currentWord.lockedLetters.forEach(index => {
+                userInput[index] = currentWord.word[index];
+            });
+            
+            displayWordBoxes();
+            resetAlphabet();
+        }
+
+        function displayWordBoxes() {
+            const boxesContainer = document.getElementById('wordBoxes');
+            boxesContainer.innerHTML = '';
+            const currentWord = words[currentWordIndex];
+            
+            userInput.forEach((letter, index) => {
+                const box = document.createElement('div');
+                box.className = 'letter-box';
+                
+                if (currentWord.lockedLetters.includes(index)) {
+                    box.className += ' locked';
+                    box.textContent = letter;
+                } else if (letter) {
+                    box.className += ' filled';
+                    box.textContent = letter;
+                }
+                
+                boxesContainer.appendChild(box);
+            });
+        }
+
+        function selectLetter(letter, btn) {
+            if (isChecking) return;
+            
+            // Jouer le son de la lettre
+            playLetterSound(letter);
+            
+            // Trouver la première case vide (non verrouillée)
+            const currentWord = words[currentWordIndex];
+            for (let i = 0; i < userInput.length; i++) {
+                if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
+                    userInput[i] = letter;
+                    displayWordBoxes();
+                    
+                    // Vérifier si le mot est complet
+                    if (!userInput.includes('')) {
+                        setTimeout(() => checkWord(), 300);
+                    }
+                    break;
+                }
+            }
+        }
+
+        function playLetterSound(letter) {
+            // Conversion des lettres spéciales pour les noms de fichiers
+            let soundFile = letter.toLowerCase();
+            if (letter === 'É') soundFile = 'e';
+            if (letter === 'Â') soundFile = 'a';
+            
+            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
+            audio.play().catch(e => console.log('Erreur lecture son:', e));
+        }
+
+        function checkWord() {
+            isChecking = true;
+            const currentWord = words[currentWordIndex];
+            const userWord = userInput.join('');
+            
+            if (userWord === currentWord.word) {
+                // Mot correct
+                score++;
+                document.getElementById('score').textContent = score;
+                
+                // Animation verte
+                const boxes = document.querySelectorAll('.letter-box');
+                boxes.forEach(box => box.classList.add('shake-green'));
+                
+                // Jouer le mot
+                playWord(currentWord.word);
+                
+                // Afficher BRAVO
+                showBravo();
+                
+                setTimeout(() => {
+                    currentWordIndex++;
+                    loadWord();
+                    isChecking = false;
+                }, 2000);
+                
+            } else {
+                // Mot incorrect
+                errors++;
+                document.getElementById('errors').textContent = errors;
+                
+                const boxes = document.querySelectorAll('.letter-box');
+                boxes.forEach((box, index) => {
+                    if (!currentWord.lockedLetters.includes(index)) {
+                        box.classList.add('shake-red');
+                        
+                        // Effacer les lettres incorrectes
+                        if (userInput[index] !== currentWord.word[index]) {
+                            setTimeout(() => {
+                                userInput[index] = '';
+                                displayWordBoxes();
+                            }, 500);
+                        } else {
+                            // Garder les lettres correctes
+                            setTimeout(() => {
+                                box.classList.remove('shake-red');
+                                box.classList.add('correct');
+                            }, 500);
+                        }
+                    }
+                });
+                
+                setTimeout(() => {
+                    boxes.forEach(box => {
+                        box.classList.remove('shake-red');
+                    });
+                    isChecking = false;
+                }, 600);
+            }
+        }
+
+        function playWord(word) {
+            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
+            audio.play().catch(e => console.log('Erreur lecture mot:', e));
+        }
+
+        function showBravo() {
+            const bravo = document.createElement('div');
+            bravo.className = 'bravo-message';
+            bravo.textContent = 'BRAVO !';
+            document.body.appendChild(bravo);
+            
+            setTimeout(() => {
+                bravo.remove();
+            }, 1000);
+        }
+
+        function resetAlphabet() {
+            const buttons = document.querySelectorAll('.letter-btn');
+            buttons.forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+
+        function showEndScreen() {
+            document.getElementById('gameArea').style.display = 'none';
+            const endScreen = document.getElementById('endScreen');
+            endScreen.classList.add('active');
+            
+            const percentage = Math.round((score / words.length) * 100);
+            document.getElementById('endStats').innerHTML = `
+                Score final : ${score}/${words.length}<br>
+                Erreurs : ${errors}<br>
+                Réussite : ${percentage}%
+            `;
+            
+            // Sauvegarder les résultats
+            saveResults(1, score, errors, percentage);
+            
+            // Compte à rebours
+            let countdown = 5;
+            const countdownEl = document.getElementById('countdown');
+            const timer = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    goToMenu();
+                }
+            }, 1000);
+        }
+
+        function saveResults(level, score, errors, percentage) {
+            const studentId = localStorage.getItem('current_student');
+            if (!studentId) return;
+            
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '[]');
+            const student = students.find(s => s.id === studentId);
+            
+            if (student) {
+                if (!student.results) student.results = {};
+                if (!student.results.ecrire_mots) student.results.ecrire_mots = {};
+                
+                student.results.ecrire_mots[`niveau${level}`] = {
+                    score: score,
+                    total: words.length,
+                    errors: errors,
+                    percentage: percentage,
+                    date: new Date().toISOString()
+                };
+                
+                localStorage.setItem('lecture_students', JSON.stringify(students));
+            }
+        }
+
+        function restartLevel() {
+            currentWordIndex = 0;
+            score = 0;
+            errors = 0;
+            document.getElementById('score').textContent = 0;
+            document.getElementById('errors').textContent = 0;
+            document.getElementById('gameArea').style.display = 'block';
+            document.getElementById('endScreen').classList.remove('active');
+            loadWord();
+        }
+
+        function changeLevel() {
+            window.location.href = 'index.html#ecrire-mots';
+        }
+
+        function goToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialisation
+        initAlphabet();
+        loadWord();
+    </script>
+</body>
+</html>

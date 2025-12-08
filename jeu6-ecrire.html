@@ -777,7 +777,7 @@
         }
 
         function playWord(word) {
-            const audio = new Audio(`/mots/${word.toLowerCase()}.mp3`);
+            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
             audio.volume = 0.8;
             audio.play().catch(e => console.log('Erreur lecture mot:', e));
         }

@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Écrire des mots - Niveau 1</title>
+    <title>Écrire des mots</title>
     <style>
         @font-face {
             font-family: 'ScriptEcole2';
             src: url('fonts/ScriptEcole2.ttf') format('truetype');
+            font-display: swap;
         }
 
         * {
@@ -17,76 +18,152 @@
         }
 
         body {
-            font-family: 'ScriptEcole2', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: #2d3436;
+            overflow-x: hidden;
         }
 
         .container {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 900px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .level-info {
-            background: #f0f0f0;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 1.2em;
-            color: #666;
-        }
-
-        .stats {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-title {
+            display: flex;
+            align-items: center;
             gap: 15px;
         }
 
-        .stat-box {
-            background: #f8f9fa;
-            padding: 15px 25px;
-            border-radius: 15px;
-            text-align: center;
-            flex: 1;
+        .game-title h1 {
+            font-size: 2em;
+            color: #2d3436;
         }
 
-        .stat-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
+        .game-info {
+            text-align: right;
+            font-size: 1.1em;
         }
 
-        .stat-value {
-            font-size: 1.8em;
-            color: #667eea;
+        .score {
+            color: #00b894;
             font-weight: bold;
         }
 
+        .progress-text {
+            color: #6c5ce7;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .level-selector {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-selector h2 {
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .level-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .level-btn {
+            background: #a29bfe;
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .level-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(162, 155, 254, 0.4);
+        }
+
+        .level-btn.easy { background: #00b894; }
+        .level-btn.medium { background: #fdcb6e; color: #2d3436; }
+        .level-btn.hard { background: #e17055; }
+        
+        .level-btn:disabled {
+            background: #b2bec3;
+            color: #636e72;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .level-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .lock-icon {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .game-board {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Zone image et alphabet */
+        .word-display {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .word-image img {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: white;
+            padding: 10px;
+        }
+
         /* Alphabet */
-        .alphabet-container {
+        .alphabet-section {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 20px;
+            border-radius: 15px;
             margin-bottom: 30px;
         }
 
@@ -94,26 +171,29 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
             gap: 10px;
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
         .letter-btn {
+            font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
             background: white;
-            border: 3px solid #667eea;
+            border: 3px solid #a29bfe;
             border-radius: 12px;
             font-size: 2em;
-            font-family: 'ScriptEcole2', Arial, sans-serif;
-            padding: 15px;
+            padding: 15px 10px;
             cursor: pointer;
             transition: all 0.3s;
-            color: #333;
+            color: #2d3436;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .letter-btn:hover:not(:disabled) {
-            background: #667eea;
+            background: #a29bfe;
             color: white;
             transform: scale(1.1);
+            border-color: #6c5ce7;
         }
 
         .letter-btn:disabled {
@@ -121,24 +201,10 @@
             cursor: not-allowed;
         }
 
-        /* Zone d'exercice */
-        .exercise-area {
-            background: #fff8e1;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-        }
-
-        .word-image {
+        /* Cases pour écrire */
+        .word-boxes-section {
+            padding: 20px;
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .word-image img {
-            max-width: 250px;
-            max-height: 250px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .word-boxes {
@@ -146,35 +212,42 @@
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         .letter-box {
+            font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
             width: 70px;
             height: 80px;
-            border: 3px solid #667eea;
+            border: 4px solid #a29bfe;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.5em;
-            font-family: 'ScriptEcole2', Arial, sans-serif;
             background: white;
-            color: #333;
+            color: #2d3436;
             transition: all 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
         .letter-box.filled {
             background: #e8eaf6;
+            border-color: #6c5ce7;
         }
 
         .letter-box.correct {
-            background: #c8e6c9;
-            border-color: #4caf50;
+            background: #00b894;
+            border-color: #00b894;
+            color: white;
         }
 
         .letter-box.locked {
-            background: #e0e0e0;
-            border-color: #999;
+            background: #dfe6e9;
+            border-color: #b2bec3;
+            color: #636e72;
         }
 
         /* Animations */
@@ -192,12 +265,16 @@
 
         .shake-green {
             animation: shake-green 0.5s;
-            background: #c8e6c9 !important;
+            background: #00b894 !important;
+            border-color: #00b894 !important;
+            color: white !important;
         }
 
         .shake-red {
             animation: shake-red 0.5s;
-            background: #ffcdd2 !important;
+            background: #e17055 !important;
+            border-color: #e17055 !important;
+            color: white !important;
         }
 
         .bravo-message {
@@ -205,7 +282,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: #4caf50;
+            background: #00b894;
             color: white;
             font-size: 4em;
             padding: 40px 80px;
@@ -213,6 +290,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             z-index: 1000;
             animation: bravoAnim 1s ease-out;
+            font-weight: bold;
         }
 
         @keyframes bravoAnim {
@@ -222,84 +300,97 @@
         }
 
         /* Boutons de contrôle */
-        .controls {
+        .game-controls {
             display: flex;
-            gap: 15px;
             justify-content: center;
+            gap: 20px;
             flex-wrap: wrap;
+            margin-top: 30px;
         }
 
         .btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            font-family: 'ScriptEcole2', Arial, sans-serif;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .btn-primary {
-            background: #667eea;
+            background: #00b894;
             color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
-            background: #5568d3;
+        .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #666;
+            background: #a29bfe;
         }
 
-        .btn-secondary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
+        .btn-danger {
+            background: #e17055;
         }
 
         /* Écran de fin */
-        .end-screen {
+        .game-over {
             display: none;
-            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .end-screen.active {
-            display: block;
-        }
-
-        .end-title {
-            font-size: 3em;
-            color: #4caf50;
-            margin-bottom: 20px;
-        }
-
-        .end-stats {
-            font-size: 1.5em;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .stars {
+        .victory-animation {
             font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
             margin: 20px 0;
+        }
+
+        .stats h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 10px;
             }
 
-            h1 {
-                font-size: 2em;
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .game-title h1 {
+                font-size: 1.5em;
             }
 
             .letter-btn {
                 font-size: 1.5em;
-                padding: 10px;
+                padding: 10px 5px;
             }
 
             .letter-box {
@@ -312,84 +403,243 @@
                 grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
                 gap: 5px;
             }
+
+            .word-image img {
+                max-width: 200px;
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .letter-btn {
+                font-size: 1.3em;
+            }
+
+            .letter-box {
+                width: 45px;
+                height: 55px;
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 Écrire des mots</h1>
-            <div class="level-info">Niveau 1</div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-label">Mot</div>
-                <div class="stat-value" id="wordNumber">1/15</div>
+            <div class="game-title">
+                <span>📝</span>
+                <h1>Écrire des mots</h1>
             </div>
-            <div class="stat-box">
-                <div class="stat-label">Score</div>
-                <div class="stat-value" id="score">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Erreurs</div>
-                <div class="stat-value" id="errors">0</div>
+            <div class="game-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="progress-text">Mot: <span id="currentWord">0</span>/<span id="totalWords">0</span></div>
             </div>
         </div>
 
-        <div id="gameArea">
-            <div class="alphabet-container">
-                <div class="alphabet-grid" id="alphabetGrid"></div>
+        <div id="levelSelector" class="level-selector">
+            <h2>🎯 Choisis ton niveau de difficulté</h2>
+            <div class="level-buttons">
+                <button class="level-btn easy" onclick="startLevel(1)" id="level1Btn">
+                    <div>🟢 Niveau 1 - Débutant</div>
+                    <small>Mots simples de 3 à 5 lettres</small>
+                </button>
+                <button class="level-btn medium" onclick="startLevel(2)" id="level2Btn" disabled>
+                    <span class="lock-icon">🔒</span>
+                    <div>🟡 Niveau 2 - Intermédiaire</div>
+                    <small>Mots plus complexes</small>
+                </button>
+                <button class="level-btn hard" onclick="startLevel(3)" id="level3Btn" disabled>
+                    <span class="lock-icon">🔒</span>
+                    <div>🔴 Niveau 3 - Avancé</div>
+                    <small>Mots difficiles</small>
+                </button>
             </div>
+            <div class="game-controls" style="margin-top: 30px;">
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
+            </div>
+        </div>
 
-            <div class="exercise-area">
+        <div id="gameBoard" class="game-board">
+            <div class="word-display">
                 <div class="word-image">
                     <img id="wordImage" src="" alt="Image du mot">
                 </div>
+            </div>
+
+            <div class="alphabet-section">
+                <div class="alphabet-grid" id="alphabetGrid"></div>
+            </div>
+
+            <div class="word-boxes-section">
                 <div class="word-boxes" id="wordBoxes"></div>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn" onclick="restartGame()">🔄 Recommencer</button>
+                <button class="btn btn-secondary" onclick="backToLevels()">📋 Changer de niveau</button>
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
             </div>
         </div>
 
-        <div class="end-screen" id="endScreen">
-            <div class="end-title">🎉 Bravo !</div>
-            <div class="stars">⭐⭐⭐</div>
-            <div class="end-stats" id="endStats"></div>
-            <p style="color: #999; margin-top: 20px;">Retour au menu dans <span id="countdown">5</span> secondes...</p>
-        </div>
+        <div id="gameOver" class="game-over">
+            <div class="victory-animation">🎉</div>
+            <h2>Félicitations !</h2>
+            <p>Tu as terminé tous les mots !</p>
+            
+            <div class="stats">
+                <h3>📊 Tes résultats</h3>
+                <div class="stat-item">
+                    <span>Mots corrects:</span>
+                    <span id="finalCorrect">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Erreurs:</span>
+                    <span id="finalErrors">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Score final:</span>
+                    <span id="finalScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Réussite:</span>
+                    <span id="finalPercentage">0%</span>
+                </div>
+            </div>
 
-        <div class="controls">
-            <button class="btn btn-secondary" onclick="restartLevel()">🔄 Recommencer</button>
-            <button class="btn btn-secondary" onclick="changeLevel()">📊 Changer niveau</button>
-            <button class="btn btn-primary" onclick="goToMenu()">🏠 Menu jeux</button>
+            <div class="game-controls">
+                <button class="btn" onclick="restartGame()">🔄 Rejouer</button>
+                <button class="btn btn-secondary" onclick="backToLevels()">📋 Autres niveaux</button>
+                <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const words = [
-            { word: 'MUR', image: 'mots/mur.jpeg', lockedLetters: [] },
-            { word: 'VIS', image: 'mots/vis.jpeg', lockedLetters: [] },
-            { word: 'FIL', image: 'mots/fil.jpeg', lockedLetters: [] },
-            { word: 'SAC', image: 'mots/sac.jpeg', lockedLetters: [] },
-            { word: 'BOL', image: 'mots/bol.jpeg', lockedLetters: [] },
-            { word: 'LAC', image: 'mots/lac.jpeg', lockedLetters: [] },
-            { word: 'ÉPI', image: 'mots/épi.jpeg', lockedLetters: [] },
-            { word: 'ÂNE', image: 'mots/âne.jpeg', lockedLetters: [] },
-            { word: 'AMI', image: 'mots/ami.jpeg', lockedLetters: [] },
-            { word: 'LAMA', image: 'mots/lama.jpeg', lockedLetters: [] },
-            { word: 'VÉLO', image: 'mots/vélo.jpeg', lockedLetters: [] },
-            { word: 'LOTO', image: 'mots/loto.jpeg', lockedLetters: [] },
-            { word: 'ROBOT', image: 'mots/robot.jpeg', lockedLetters: [4] }, // T muet
-            { word: 'ZÉRO', image: 'mots/zéro.jpeg', lockedLetters: [] },
-            { word: 'BRAS', image: 'mots/bras.jpeg', lockedLetters: [3] } // S muet
-        ];
+        const LEVELS = {
+            1: {
+                name: "Débutant",
+                words: [
+                    { word: 'MUR', image: 'mots/mur.jpeg', lockedLetters: [] },
+                    { word: 'VIS', image: 'mots/vis.jpeg', lockedLetters: [] },
+                    { word: 'FIL', image: 'mots/fil.jpeg', lockedLetters: [] },
+                    { word: 'SAC', image: 'mots/sac.jpeg', lockedLetters: [] },
+                    { word: 'BOL', image: 'mots/bol.jpeg', lockedLetters: [] },
+                    { word: 'LAC', image: 'mots/lac.jpeg', lockedLetters: [] },
+                    { word: 'ÉPI', image: 'mots/épi.jpeg', lockedLetters: [] },
+                    { word: 'ÂNE', image: 'mots/âne.jpeg', lockedLetters: [] },
+                    { word: 'AMI', image: 'mots/ami.jpeg', lockedLetters: [] },
+                    { word: 'LAMA', image: 'mots/lama.jpeg', lockedLetters: [] },
+                    { word: 'VÉLO', image: 'mots/vélo.jpeg', lockedLetters: [] },
+                    { word: 'LOTO', image: 'mots/loto.jpeg', lockedLetters: [] },
+                    { word: 'ROBOT', image: 'mots/robot.jpeg', lockedLetters: [4] },
+                    { word: 'ZÉRO', image: 'mots/zéro.jpeg', lockedLetters: [] },
+                    { word: 'BRAS', image: 'mots/bras.jpeg', lockedLetters: [3] }
+                ]
+            },
+            2: {
+                name: "Intermédiaire",
+                words: []
+            },
+            3: {
+                name: "Avancé",
+                words: []
+            }
+        };
 
         const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Â', 'É'];
 
+        let currentLevel = null;
+        let currentLevelNumber = null;
         let currentWordIndex = 0;
         let userInput = [];
         let score = 0;
         let errors = 0;
         let isChecking = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showLevelSelector();
+            updateLevelButtons();
+        });
+
+        function showLevelSelector() {
+            document.getElementById('levelSelector').style.display = 'block';
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            resetGame();
+            updateLevelButtons();
+        }
+
+        function updateLevelButtons() {
+            const progress = getEcrireProgress();
+            
+            document.getElementById('level1Btn').disabled = false;
+            
+            const level2Btn = document.getElementById('level2Btn');
+            if (progress.level1Completed) {
+                level2Btn.disabled = false;
+                level2Btn.querySelector('.lock-icon')?.remove();
+            } else {
+                level2Btn.disabled = true;
+                if (!level2Btn.querySelector('.lock-icon')) {
+                    const lockIcon = document.createElement('span');
+                    lockIcon.className = 'lock-icon';
+                    lockIcon.textContent = '🔒';
+                    level2Btn.insertBefore(lockIcon, level2Btn.firstChild);
+                }
+            }
+            
+            const level3Btn = document.getElementById('level3Btn');
+            if (progress.level2Completed) {
+                level3Btn.disabled = false;
+                level3Btn.querySelector('.lock-icon')?.remove();
+            } else {
+                level3Btn.disabled = true;
+                if (!level3Btn.querySelector('.lock-icon')) {
+                    const lockIcon = document.createElement('span');
+                    lockIcon.className = 'lock-icon';
+                    lockIcon.textContent = '🔒';
+                    level3Btn.insertBefore(lockIcon, level3Btn.firstChild);
+                }
+            }
+        }
+
+        function getEcrireProgress() {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+            
+            if (currentStudentName && students[currentStudentName]) {
+                const ecrireStats = students[currentStudentName].resultatsParJeu['ecrire-mots'] || {};
+                return {
+                    level1Completed: ecrireStats.level1Completed || false,
+                    level2Completed: ecrireStats.level2Completed || false
+                };
+            }
+            
+            return {
+                level1Completed: false,
+                level2Completed: false
+            };
+        }
+
+        function startLevel(level) {
+            currentLevel = LEVELS[level];
+            if (!currentLevel || currentLevel.words.length === 0) return;
+            
+            currentLevelNumber = level;
+            currentWordIndex = 0;
+            score = 0;
+            errors = 0;
+            
+            updateScore();
+            updateProgress();
+            
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameBoard').style.display = 'block';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            initAlphabet();
+            loadWord();
+        }
 
         function initAlphabet() {
             const grid = document.getElementById('alphabetGrid');
@@ -405,30 +655,29 @@
         }
 
         function loadWord() {
-            if (currentWordIndex >= words.length) {
-                showEndScreen();
+            if (currentWordIndex >= currentLevel.words.length) {
+                endGame();
                 return;
             }
 
-            const currentWord = words[currentWordIndex];
+            const currentWord = currentLevel.words[currentWordIndex];
             document.getElementById('wordImage').src = currentWord.image;
-            document.getElementById('wordNumber').textContent = `${currentWordIndex + 1}/${words.length}`;
             
             userInput = new Array(currentWord.word.length).fill('');
             
-            // Pré-remplir les lettres verrouillées
             currentWord.lockedLetters.forEach(index => {
                 userInput[index] = currentWord.word[index];
             });
             
             displayWordBoxes();
             resetAlphabet();
+            updateProgress();
         }
 
         function displayWordBoxes() {
             const boxesContainer = document.getElementById('wordBoxes');
             boxesContainer.innerHTML = '';
-            const currentWord = words[currentWordIndex];
+            const currentWord = currentLevel.words[currentWordIndex];
             
             userInput.forEach((letter, index) => {
                 const box = document.createElement('div');
@@ -449,17 +698,14 @@
         function selectLetter(letter, btn) {
             if (isChecking) return;
             
-            // Jouer le son de la lettre
             playLetterSound(letter);
             
-            // Trouver la première case vide (non verrouillée)
-            const currentWord = words[currentWordIndex];
+            const currentWord = currentLevel.words[currentWordIndex];
             for (let i = 0; i < userInput.length; i++) {
                 if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
                     userInput[i] = letter;
                     displayWordBoxes();
                     
-                    // Vérifier si le mot est complet
                     if (!userInput.includes('')) {
                         setTimeout(() => checkWord(), 300);
                     }
@@ -469,33 +715,28 @@
         }
 
         function playLetterSound(letter) {
-            // Conversion des lettres spéciales pour les noms de fichiers
             let soundFile = letter.toLowerCase();
             if (letter === 'É') soundFile = 'e';
             if (letter === 'Â') soundFile = 'a';
             
-            const audio = new Audio(`phonemes/${soundFile}.mp3`);
+            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
+            audio.volume = 0.8;
             audio.play().catch(e => console.log('Erreur lecture son:', e));
         }
 
         function checkWord() {
             isChecking = true;
-            const currentWord = words[currentWordIndex];
+            const currentWord = currentLevel.words[currentWordIndex];
             const userWord = userInput.join('');
             
             if (userWord === currentWord.word) {
-                // Mot correct
-                score++;
-                document.getElementById('score').textContent = score;
+                score += 10;
+                updateScore();
                 
-                // Animation verte
                 const boxes = document.querySelectorAll('.letter-box');
                 boxes.forEach(box => box.classList.add('shake-green'));
                 
-                // Jouer le mot
                 playWord(currentWord.word);
-                
-                // Afficher BRAVO
                 showBravo();
                 
                 setTimeout(() => {
@@ -505,23 +746,19 @@
                 }, 2000);
                 
             } else {
-                // Mot incorrect
                 errors++;
-                document.getElementById('errors').textContent = errors;
                 
                 const boxes = document.querySelectorAll('.letter-box');
                 boxes.forEach((box, index) => {
                     if (!currentWord.lockedLetters.includes(index)) {
                         box.classList.add('shake-red');
                         
-                        // Effacer les lettres incorrectes
                         if (userInput[index] !== currentWord.word[index]) {
                             setTimeout(() => {
                                 userInput[index] = '';
                                 displayWordBoxes();
                             }, 500);
                         } else {
-                            // Garder les lettres correctes
                             setTimeout(() => {
                                 box.classList.remove('shake-red');
                                 box.classList.add('correct');
@@ -540,7 +777,8 @@
         }
 
         function playWord(word) {
-            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
+            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
+            audio.volume = 0.8;
             audio.play().catch(e => console.log('Erreur lecture mot:', e));
         }
 
@@ -562,79 +800,107 @@
             });
         }
 
-        function showEndScreen() {
-            document.getElementById('gameArea').style.display = 'none';
-            const endScreen = document.getElementById('endScreen');
-            endScreen.classList.add('active');
-            
-            const percentage = Math.round((score / words.length) * 100);
-            document.getElementById('endStats').innerHTML = `
-                Score final : ${score}/${words.length}<br>
-                Erreurs : ${errors}<br>
-                Réussite : ${percentage}%
-            `;
-            
-            // Sauvegarder les résultats
-            saveResults(1, score, errors, percentage);
-            
-            // Compte à rebours
-            let countdown = 5;
-            const countdownEl = document.getElementById('countdown');
-            const timer = setInterval(() => {
-                countdown--;
-                countdownEl.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    goToMenu();
-                }
-            }, 1000);
+        function updateScore() {
+            document.getElementById('score').textContent = '0';
+            document.getElementById('currentWord').textContent = '0';
+            document.getElementById('totalWords').textContent = '0';
         }
 
-        function saveResults(level, score, errors, percentage) {
-            const studentId = localStorage.getItem('current_student');
-            if (!studentId) return;
+        function restartGame() {
+            if (currentLevelNumber) {
+                startLevel(currentLevelNumber);
+            }
+        }
+
+        function backToLevels() {
+            showLevelSelector();
+        }
+
+        function goHome() {
+            window.location.href = 'menu-jeux.html';
+        }
+    </script>
+</body>
+</html>').textContent = score;
+        }
+
+        function updateProgress() {
+            document.getElementById('currentWord').textContent = currentWordIndex + 1;
+            document.getElementById('totalWords').textContent = currentLevel.words.length;
+        }
+
+        function endGame() {
+            const correctWords = currentLevel.words.length - errors;
+            const percentage = Math.round((correctWords / currentLevel.words.length) * 100);
             
-            const students = JSON.parse(localStorage.getItem('lecture_students') || '[]');
-            const student = students.find(s => s.id === studentId);
+            document.getElementById('finalCorrect').textContent = correctWords;
+            document.getElementById('finalErrors').textContent = errors;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalPercentage').textContent = percentage + '%';
             
-            if (student) {
-                if (!student.results) student.results = {};
-                if (!student.results.ecrire_mots) student.results.ecrire_mots = {};
+            saveGameStats(correctWords, errors, score, percentage);
+            
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'block';
+            
+            setTimeout(() => {
+                showLevelSelector();
+            }, 5000);
+        }
+
+        function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+            
+            if (currentStudentName && students[currentStudentName]) {
+                const student = students[currentStudentName];
                 
-                student.results.ecrire_mots[`niveau${level}`] = {
-                    score: score,
-                    total: words.length,
-                    errors: errors,
-                    percentage: percentage,
-                    date: new Date().toISOString()
-                };
+                student.statistiques.sessionsJouees++;
+                
+                if (!student.resultatsParJeu['ecrire-mots']) {
+                    student.resultatsParJeu['ecrire-mots'] = {
+                        partiesJouees: 0,
+                        meilleurScore: 0,
+                        totalCorrect: 0,
+                        totalErrors: 0,
+                        level1Completed: false,
+                        level2Completed: false
+                    };
+                }
+                
+                const ecrireStats = student.resultatsParJeu['ecrire-mots'];
+                ecrireStats.partiesJouees++;
+                ecrireStats.meilleurScore = Math.max(ecrireStats.meilleurScore, finalScore);
+                ecrireStats.totalCorrect += correct;
+                ecrireStats.totalErrors += wrongAnswers;
+                
+                if (currentLevelNumber === 1 && percentage >= 80) {
+                    ecrireStats.level1Completed = true;
+                } else if (currentLevelNumber === 2 && percentage >= 80) {
+                    ecrireStats.level2Completed = true;
+                }
                 
                 localStorage.setItem('lecture_students', JSON.stringify(students));
             }
         }
 
-        function restartLevel() {
+        function getCurrentStudentName() {
+            try {
+                const currentStudent = JSON.parse(sessionStorage.getItem('currentStudent'));
+                return currentStudent ? currentStudent.nom : null;
+            } catch (error) {
+                console.log('Erreur lors de la récupération de l\'élève:', error);
+                return null;
+            }
+        }
+
+        function resetGame() {
+            currentLevel = null;
+            currentLevelNumber = null;
             currentWordIndex = 0;
+            userInput = [];
             score = 0;
             errors = 0;
-            document.getElementById('score').textContent = 0;
-            document.getElementById('errors').textContent = 0;
-            document.getElementById('gameArea').style.display = 'block';
-            document.getElementById('endScreen').classList.remove('active');
-            loadWord();
-        }
-
-        function changeLevel() {
-            window.location.href = 'index.html#ecrire-mots';
-        }
-
-        function goToMenu() {
-            window.location.href = 'index.html';
-        }
-
-        // Initialisation
-        initAlphabet();
-        loadWord();
-    </script>
-</body>
-</html>
+            isChecking = false;
+            
+            document.getElementById('score

@@ -801,27 +801,7 @@
         }
 
         function updateScore() {
-            document.getElementById('score').textContent = '0';
-            document.getElementById('currentWord').textContent = '0';
-            document.getElementById('totalWords').textContent = '0';
-        }
-
-        function restartGame() {
-            if (currentLevelNumber) {
-                startLevel(currentLevelNumber);
-            }
-        }
-
-        function backToLevels() {
-            showLevelSelector();
-        }
-
-        function goHome() {
-            window.location.href = 'menu-jeux.html';
-        }
-    </script>
-</body>
-</html>').textContent = score;
+            document.getElementById('score').textContent = score;
         }
 
         function updateProgress() {
@@ -842,10 +822,6 @@
             
             document.getElementById('gameBoard').style.display = 'none';
             document.getElementById('gameOver').style.display = 'block';
-            
-            setTimeout(() => {
-                showLevelSelector();
-            }, 5000);
         }
 
         function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
@@ -903,4 +879,24 @@
             errors = 0;
             isChecking = false;
             
-            document.getElementById('score
+            document.getElementById('score').textContent = '0';
+            document.getElementById('currentWord').textContent = '0';
+            document.getElementById('totalWords').textContent = '0';
+        }
+
+        function restartGame() {
+            if (currentLevelNumber) {
+                startLevel(currentLevelNumber);
+            }
+        }
+
+        function backToLevels() {
+            showLevelSelector();
+        }
+
+        function goHome() {
+            window.location.href = 'menu-jeux.html';
+        }
+    </script>
+</body>
+</html>

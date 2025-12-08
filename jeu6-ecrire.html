@@ -140,39 +140,29 @@
             margin-bottom: 20px;
         }
 
-        /* Zone image et alphabet */
-        .word-display {
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            padding: 30px;
-            border-radius: 20px;
+        /* NOUVEAU : Conteneur pour l'image et l'alphabet côte à côte */
+        .game-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
             margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            align-items: flex-start;
         }
 
-        .word-image img {
-            max-width: 250px;
-            max-height: 250px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            background: white;
-            padding: 10px;
-        }
-
-        /* Alphabet */
+        /* Zone alphabet - maintenant à GAUCHE */
         .alphabet-section {
+            flex: 1;
+            min-width: 300px;
             background: #f8f9fa;
             padding: 20px;
             border-radius: 15px;
-            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .alphabet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
             gap: 10px;
-            max-width: 800px;
-            margin: 0 auto;
         }
 
         .letter-btn {
@@ -187,12 +177,16 @@
             color: #2d3436;
             font-weight: bold;
             text-transform: uppercase;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .letter-btn:hover:not(:disabled) {
             background: #a29bfe;
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.05);
             border-color: #6c5ce7;
         }
 
@@ -201,10 +195,37 @@
             cursor: not-allowed;
         }
 
-        /* Cases pour écrire */
+        /* Zone image - maintenant à DROITE */
+        .word-display {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: white;
+            padding: 10px;
+            object-fit: contain;
+        }
+
+        /* Cases pour écrire (reste en dessous) */
         .word-boxes-section {
             padding: 20px;
             text-align: center;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-top: 10px;
         }
 
         .word-boxes {
@@ -388,6 +409,14 @@
                 font-size: 1.5em;
             }
 
+            .game-content {
+                flex-direction: column;
+            }
+            
+            .alphabet-section, .word-display {
+                min-width: 100%;
+            }
+
             .letter-btn {
                 font-size: 1.5em;
                 padding: 10px 5px;
@@ -405,7 +434,6 @@
             }
 
             .word-image img {
-                max-width: 200px;
                 max-height: 200px;
             }
         }
@@ -460,17 +488,25 @@
         </div>
 
         <div id="gameBoard" class="game-board">
-            <div class="word-display">
-                <div class="word-image">
-                    <img id="wordImage" src="" alt="Image du mot">
+            <!-- NOUVELLE STRUCTURE : alphabet à gauche, image à droite -->
+            <div class="game-content">
+                <!-- Alphabet à GAUCHE -->
+                <div class="alphabet-section">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #6c5ce7;">🎯 Choisis les lettres</h3>
+                    <div class="alphabet-grid" id="alphabetGrid"></div>
+                </div>
+
+                <!-- Image à DROITE -->
+                <div class="word-display">
+                    <div class="word-image">
+                        <img id="wordImage" src="" alt="Image du mot">
+                    </div>
                 </div>
             </div>
 
-            <div class="alphabet-section">
-                <div class="alphabet-grid" id="alphabetGrid"></div>
-            </div>
-
+            <!-- Cases pour écrire (en dessous) -->
             <div class="word-boxes-section">
+                <h3 style="text-align: center; margin-bottom: 15px; color: #6c5ce7;">✍️ Écris le mot</h3>
                 <div class="word-boxes" id="wordBoxes"></div>
             </div>
 
@@ -716,7 +752,6 @@
 
         function playLetterSound(letter) {
             let soundFile = letter.toLowerCase();
-            if (letter === 'É') soundFile = 'é';
             if (letter === 'Â') soundFile = 'a';
             
             const audio = new Audio(`phonemes/${soundFile}.mp3`);

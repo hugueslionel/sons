@@ -474,7 +474,7 @@
             if (letter === 'É') soundFile = 'e';
             if (letter === 'Â') soundFile = 'a';
             
-            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
+            const audio = new Audio(`phonemes/${soundFile}.mp3`);
             audio.play().catch(e => console.log('Erreur lecture son:', e));
         }
 
@@ -540,7 +540,7 @@
         }
 
         function playWord(word) {
-            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
+            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
             audio.play().catch(e => console.log('Erreur lecture mot:', e));
         }
 

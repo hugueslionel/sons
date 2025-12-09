@@ -766,10 +766,13 @@
 
         function playLetterSound(letter) {
             let soundFile = letter.toLowerCase();
-            if (letter === 'É') soundFile = 'e';
+            if (letter === 'Y') soundFile = 'i';
+            if (letter === 'Q') soundFile = 'c';
+            if (letter === 'K') soundFile = 'c';
+
             if (letter === 'Â') soundFile = 'a';
             
-            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
+            const audio = new Audio(`phonemes/${soundFile}.mp3`);
             audio.volume = 0.8;
             
             // Si le son se termine plus tôt, on ne fait rien
@@ -858,7 +861,7 @@
 
         function playWord(word) {
             isPlayingSound = true;
-            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
+            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
             audio.volume = 0.8;
             
             audio.onended = () => {

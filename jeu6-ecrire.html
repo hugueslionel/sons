@@ -236,6 +236,53 @@
             margin-top: 20px;
         }
 
+        /* Conteneur pour l'image et le bouton son */
+        .word-image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Bouton son */
+        .sound-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #00b894;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .sound-btn:hover {
+            background: #00b894;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .sound-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Pour mobile */
+        @media (max-width: 768px) {
+            .sound-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+                bottom: 10px;
+                right: 10px;
+            }
+        }        
+
         .letter-box {
             font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
             width: 70px;
@@ -498,8 +545,11 @@
 
                 <!-- Image à DROITE -->
                 <div class="word-display">
-                    <div class="word-image">
+                    <div class="word-image-container">
                         <img id="wordImage" src="" alt="Image du mot">
+                        <button class="sound-btn" onclick="playCurrentWordSound()" title="Écouter le mot">
+                            🔊
+                        </button>
                     </div>
                 </div>
             </div>
@@ -604,6 +654,30 @@
             document.getElementById('gameOver').style.display = 'none';
             resetGame();
             updateLevelButtons();
+        }
+
+        function playCurrentWordSound() {
+            if (!currentLevel || currentWordIndex >= currentLevel.words.length || isPlayingSound) return;
+    
+            const currentWord = currentLevel.words[currentWordIndex];
+    
+            // Désactiver temporairement le bouton pour éviter les clics multiples
+            const soundBtn = document.querySelector('.sound-btn');
+            if (soundBtn) {
+                soundBtn.disabled = true;
+                soundBtn.style.opacity = '0.7';
+            }
+    
+            // Jouer le son du mot
+            playWord(currentWord.word, function() {
+                // Réactiver le bouton après la lecture
+                if (soundBtn) {
+                    setTimeout(() => {
+                        soundBtn.disabled = false;
+                        soundBtn.style.opacity = '1';
+                    }, 300);
+                }
+            });
         }
 
         function updateLevelButtons() {
@@ -914,7 +988,7 @@
                     isChecking = false;
                     isPlayingSound = false;
                     resetAlphabet(); // Réactiver les boutons
-                }, 600);
+                }, 500);
             }
         }
 

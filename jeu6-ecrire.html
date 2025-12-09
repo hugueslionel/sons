@@ -511,7 +511,7 @@
             </div>
 
             <div class="game-controls">
-                <button class="btn" onclick="restartGame()">🔄 Recommencer</button>
+                <button class="btn" onclick="restartCurrentWord()">🔄 Recommencer</button>
                 <button class="btn btn-secondary" onclick="backToLevels()">📋 Changer de niveau</button>
                 <button class="btn btn-danger" onclick="goHome()">🎮 Menu des jeux</button>
             </div>
@@ -709,6 +709,33 @@
             displayWordBoxes();
             resetAlphabet();
             updateProgress();
+        }
+
+        function restartCurrentWord() {
+            if (!currentLevel || currentWordIndex >= currentLevel.words.length) return;
+    
+            const currentWord = currentLevel.words[currentWordIndex];
+    
+            // Réinitialiser userInput mais garder les lettres verrouillées
+            userInput = new Array(currentWord.word.length).fill('');
+    
+            currentWord.lockedLetters.forEach(index => {
+                userInput[index] = currentWord.word[index];
+            });
+    
+            // Réafficher les cases
+            displayWordBoxes();
+    
+            // Réactiver l'alphabet
+            isChecking = false;
+            isPlayingSound = false;
+            resetAlphabet();
+    
+            // Optionnel : réinitialiser l'animation si présente
+            const boxes = document.querySelectorAll('.letter-box');
+            boxes.forEach(box => {
+                box.classList.remove('shake-green', 'shake-red', 'correct');
+            });
         }
 
         function displayWordBoxes() {

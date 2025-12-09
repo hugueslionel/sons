@@ -140,7 +140,7 @@
             margin-bottom: 20px;
         }
 
-        /* NOUVEAU : Conteneur pour l'image et l'alphabet côte à côte */
+        /* Conteneur pour l'image et l'alphabet côte à côte */
         .game-content {
             display: flex;
             flex-wrap: wrap;
@@ -149,7 +149,7 @@
             align-items: flex-start;
         }
 
-        /* Zone alphabet - maintenant à GAUCHE */
+        /* Zone alphabet - à GAUCHE */
         .alphabet-section {
             flex: 1;
             min-width: 300px;
@@ -195,7 +195,7 @@
             cursor: not-allowed;
         }
 
-        /* Zone image - maintenant à DROITE */
+        /* Zone image - à DROITE */
         .word-display {
             flex: 1;
             min-width: 300px;
@@ -219,7 +219,7 @@
             object-fit: contain;
         }
 
-        /* Cases pour écrire (reste en dessous) */
+        /* Cases pour écrire */
         .word-boxes-section {
             padding: 20px;
             text-align: center;
@@ -488,7 +488,7 @@
         </div>
 
         <div id="gameBoard" class="game-board">
-            <!-- NOUVELLE STRUCTURE : alphabet à gauche, image à droite -->
+            <!-- Alphabet à GAUCHE, Image à DROITE -->
             <div class="game-content">
                 <!-- Alphabet à GAUCHE -->
                 <div class="alphabet-section">
@@ -504,7 +504,7 @@
                 </div>
             </div>
 
-            <!-- Cases pour écrire (en dessous) -->
+            <!-- Cases pour écrire -->
             <div class="word-boxes-section">
                 <h3 style="text-align: center; margin-bottom: 15px; color: #6c5ce7;">✍️ Écris le mot</h3>
                 <div class="word-boxes" id="wordBoxes"></div>
@@ -591,6 +591,7 @@
         let score = 0;
         let errors = 0;
         let isChecking = false;
+        let isPlayingSound = false; // Variable pour contrôler les clics pendant la lecture du son
 
         document.addEventListener('DOMContentLoaded', function() {
             showLevelSelector();
@@ -732,35 +733,76 @@
         }
 
         function selectLetter(letter, btn) {
-            if (isChecking) return;
+            // Empêcher les clics pendant la vérification ou la lecture du son
+            if (isChecking || isPlayingSound) return;
+            
+            // Désactiver temporairement tous les boutons
+            disableAlphabetButtons();
+            isPlayingSound = true;
             
             playLetterSound(letter);
             
-            const currentWord = currentLevel.words[currentWordIndex];
-            for (let i = 0; i < userInput.length; i++) {
-                if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
-                    userInput[i] = letter;
-                    displayWordBoxes();
-                    
-                    if (!userInput.includes('')) {
-                        setTimeout(() => checkWord(), 300);
+            // Attendre que le son soit terminé + un délai supplémentaire
+            // pour que l'élève entende bien le phonème
+            setTimeout(() => {
+                const currentWord = currentLevel.words[currentWordIndex];
+                for (let i = 0; i < userInput.length; i++) {
+                    if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
+                        userInput[i] = letter;
+                        displayWordBoxes();
+                        
+                        if (!userInput.includes('')) {
+                            setTimeout(() => checkWord(), 300);
+                        }
+                        break;
                     }
-                    break;
                 }
-            }
+                
+                // Réactiver les boutons
+                resetAlphabet();
+                isPlayingSound = false;
+            }, 800); // Délai total de 800ms après le clic
         }
 
         function playLetterSound(letter) {
             let soundFile = letter.toLowerCase();
+            if (letter === 'É') soundFile = 'e';
             if (letter === 'Â') soundFile = 'a';
             
-            const audio = new Audio(`phonemes/${soundFile}.mp3`);
+            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
             audio.volume = 0.8;
-            audio.play().catch(e => console.log('Erreur lecture son:', e));
+            
+            // Si le son se termine plus tôt, on ne fait rien
+            // car le setTimeout dans selectLetter gère le timing
+            audio.onended = () => {
+                // Le son est terminé, mais on garde le délai supplémentaire
+            };
+            
+            audio.play().catch(e => {
+                console.log('Erreur lecture son:', e);
+                isPlayingSound = false;
+                resetAlphabet(); // Réactiver en cas d'erreur
+            });
+        }
+
+        function disableAlphabetButtons() {
+            const buttons = document.querySelectorAll('.letter-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        function resetAlphabet() {
+            const buttons = document.querySelectorAll('.letter-btn');
+            buttons.forEach(btn => {
+                btn.disabled = isChecking || isPlayingSound;
+            });
         }
 
         function checkWord() {
             isChecking = true;
+            disableAlphabetButtons(); // Désactiver pendant la vérification
+            
             const currentWord = currentLevel.words[currentWordIndex];
             const userWord = userInput.join('');
             
@@ -774,11 +816,13 @@
                 playWord(currentWord.word);
                 showBravo();
                 
+                // DÉLAI POUR AFFICHER L'IMAGE SUIVANTE - MODIFIABLE ICI
                 setTimeout(() => {
                     currentWordIndex++;
                     loadWord();
                     isChecking = false;
-                }, 2000);
+                    resetAlphabet(); // Réactiver les boutons
+                }, 1500); // ← Délai avant image suivante (1500ms = 1.5 secondes)
                 
             } else {
                 errors++;
@@ -807,14 +851,24 @@
                         box.classList.remove('shake-red');
                     });
                     isChecking = false;
+                    resetAlphabet(); // Réactiver les boutons
                 }, 600);
             }
         }
 
         function playWord(word) {
-            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
+            isPlayingSound = true;
+            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
             audio.volume = 0.8;
-            audio.play().catch(e => console.log('Erreur lecture mot:', e));
+            
+            audio.onended = () => {
+                isPlayingSound = false;
+            };
+            
+            audio.play().catch(e => {
+                console.log('Erreur lecture mot:', e);
+                isPlayingSound = false;
+            });
         }
 
         function showBravo() {
@@ -826,13 +880,6 @@
             setTimeout(() => {
                 bravo.remove();
             }, 1000);
-        }
-
-        function resetAlphabet() {
-            const buttons = document.querySelectorAll('.letter-btn');
-            buttons.forEach(btn => {
-                btn.disabled = false;
-            });
         }
 
         function updateScore() {
@@ -913,6 +960,7 @@
             score = 0;
             errors = 0;
             isChecking = false;
+            isPlayingSound = false;
             
             document.getElementById('score').textContent = '0';
             document.getElementById('currentWord').textContent = '0';

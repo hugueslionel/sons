@@ -641,7 +641,6 @@
         let score = 0;
         let errors = 0;
         let isChecking = false;
-        let isPlayingSound = false; // Variable pour contrôler les clics pendant la lecture du son
 
         document.addEventListener('DOMContentLoaded', function() {
             showLevelSelector();
@@ -657,26 +656,21 @@
         }
 
         function playCurrentWordSound() {
-            if (!currentLevel || currentWordIndex >= currentLevel.words.length || isPlayingSound) return;
+            if (!currentLevel || currentWordIndex >= currentLevel.words.length) return;
     
             const currentWord = currentLevel.words[currentWordIndex];
-    
-            // Désactiver temporairement le bouton pour éviter les clics multiples
-            const soundBtn = document.querySelector('.sound-btn');
-            if (soundBtn) {
-                soundBtn.disabled = true;
-                soundBtn.style.opacity = '0.7';
-            }
-    
-            // Jouer le son du mot
-            playWord(currentWord.word, function() {
-                // Réactiver le bouton après la lecture
-                if (soundBtn) {
-                    setTimeout(() => {
-                        soundBtn.disabled = false;
-                        soundBtn.style.opacity = '1';
-                    }, 300);
-                }
+            
+            // Jouer le son du mot sans restriction
+            playWordSound(currentWord.word);
+        }
+
+        // Nouvelle fonction pour jouer le son du mot sans restrictions
+        function playWordSound(word) {
+            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
+            audio.volume = 0.8;
+            
+            audio.play().catch(e => {
+                console.log('Erreur lecture mot:', e);
             });
         }
 
@@ -802,7 +796,6 @@
     
             // Réactiver l'alphabet
             isChecking = false;
-            isPlayingSound = false;
             resetAlphabet();
     
             // Optionnel : réinitialiser l'animation si présente
@@ -834,12 +827,11 @@
         }
 
         function selectLetter(letter, btn) {
-            // Empêcher les clics pendant la vérification ou la lecture du son
-            if (isChecking || isPlayingSound) return;
+            // Empêcher les clics pendant la vérification
+            if (isChecking) return;
             
             // Désactiver temporairement tous les boutons
             disableAlphabetButtons();
-            isPlayingSound = true;
             
             playLetterSound(letter, function() {
                 // Cette fonction est appelée quand le son est terminé
@@ -865,13 +857,11 @@
                 if (!letterPlaced) {
                     // Réactiver les boutons
                     setTimeout(() => {
-                        isPlayingSound = false;
                         resetAlphabet();
                     }, 200);
                 } else {
                     // Réactiver les boutons avec un petit délai supplémentaire
                     setTimeout(() => {
-                        isPlayingSound = false;
                         resetAlphabet();
                     }, 200);
                 }
@@ -893,27 +883,17 @@
                 if (callback) {
                     // Attendre un peu avant d'exécuter le callback
                     setTimeout(callback, 200);
-                } else {
-                    // Pas de callback, réactiver simplement
-                    setTimeout(() => {
-                        isPlayingSound = false;
-                        resetAlphabet();
-                    }, 200);
                 }
             };
             
             // En cas d'erreur, réactiver quand même
             audio.onerror = function() {
                 console.log('Erreur lecture son:', letter);
-                isPlayingSound = false;
-                resetAlphabet();
                 if (callback) setTimeout(callback, 200);
             };
             
             audio.play().catch(e => {
                 console.log('Erreur lecture son:', e);
-                isPlayingSound = false;
-                resetAlphabet();
                 if (callback) setTimeout(callback, 200);
             });
         }
@@ -928,7 +908,7 @@
         function resetAlphabet() {
             const buttons = document.querySelectorAll('.letter-btn');
             buttons.forEach(btn => {
-                btn.disabled = isChecking || isPlayingSound;
+                btn.disabled = isChecking;
             });
         }
 
@@ -946,18 +926,20 @@
                 const boxes = document.querySelectorAll('.letter-box');
                 boxes.forEach(box => box.classList.add('shake-green'));
                 
-                playWord(currentWord.word, function() {
-                    // Quand le son du mot est terminé, afficher BRAVO
+                // Utiliser la nouvelle fonction pour jouer le son du mot (sans restrictions)
+                playWordSound(currentWord.word);
+                
+                // Afficher BRAVO après un délai
+                setTimeout(() => {
                     showBravo();
-                    
-                    // DÉLAI POUR AFFICHER L'IMAGE SUIVANTE - MODIFIABLE ICI
-                    setTimeout(() => {
-                        currentWordIndex++;
-                        isChecking = false;
-                        isPlayingSound = false;
-                        loadWord();
-                    }, 1000); // ← Délai avant image suivante (1000ms = 1 seconde)
-                });
+                }, 500);
+                
+                // Passer au mot suivant après un délai
+                setTimeout(() => {
+                    currentWordIndex++;
+                    isChecking = false;
+                    loadWord();
+                }, 1500); // Délai avant image suivante
                 
             } else {
                 errors++;
@@ -986,39 +968,9 @@
                         box.classList.remove('shake-red');
                     });
                     isChecking = false;
-                    isPlayingSound = false;
                     resetAlphabet(); // Réactiver les boutons
                 }, 500);
             }
-        }
-
-        function playWord(word, callback) {
-            isPlayingSound = true;
-            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
-            audio.volume = 0.8;
-            
-            audio.onended = function() {
-                isPlayingSound = false;
-                if (callback) {
-                    setTimeout(callback, 100);
-                }
-            };
-            
-            audio.onerror = function() {
-                console.log('Erreur lecture mot:', word);
-                isPlayingSound = false;
-                if (callback) {
-                    setTimeout(callback, 100);
-                }
-            };
-            
-            audio.play().catch(e => {
-                console.log('Erreur lecture mot:', e);
-                isPlayingSound = false;
-                if (callback) {
-                    setTimeout(callback, 100);
-                }
-            });
         }
 
         function showBravo() {
@@ -1057,7 +1009,6 @@
             
             // Réinitialiser les états
             isChecking = false;
-            isPlayingSound = false;
         }
 
         function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
@@ -1114,7 +1065,6 @@
             score = 0;
             errors = 0;
             isChecking = false;
-            isPlayingSound = false;
             
             document.getElementById('score').textContent = '0';
             document.getElementById('currentWord').textContent = '0';

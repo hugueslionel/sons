@@ -740,38 +740,51 @@
             disableAlphabetButtons();
             isPlayingSound = true;
             
-            // Stocker la lettre pour l'utiliser après le délai
-            const selectedLetter = letter;
-            
             playLetterSound(letter, function() {
                 // Cette fonction est appelée quand le son est terminé
                 const currentWord = currentLevel.words[currentWordIndex];
+                let letterPlaced = false;
+                
+                // Trouver la première case vide et y placer la lettre
                 for (let i = 0; i < userInput.length; i++) {
                     if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
-                        userInput[i] = selectedLetter;
+                        userInput[i] = letter;
                         displayWordBoxes();
+                        letterPlaced = true;
                         
+                        // Vérifier si le mot est complet
                         if (!userInput.includes('')) {
                             setTimeout(() => checkWord(), 300);
                         }
-                        break;
+                        break; // IMPORTANT : sortir de la boucle après avoir placé une lettre
                     }
                 }
                 
-                // Réactiver les boutons avec un petit délai supplémentaire
-                setTimeout(() => {
-                    isPlayingSound = false;
-                    resetAlphabet();
-                }, 200); // Petit délai supplémentaire pour éviter les clics trop rapides
+                // Si aucune lettre n'a été placée (toutes les cases sont pleines)
+                if (!letterPlaced) {
+                    // Réactiver les boutons
+                    setTimeout(() => {
+                        isPlayingSound = false;
+                        resetAlphabet();
+                    }, 200);
+                } else {
+                    // Réactiver les boutons avec un petit délai supplémentaire
+                    setTimeout(() => {
+                        isPlayingSound = false;
+                        resetAlphabet();
+                    }, 200);
+                }
             });
         }
 
         function playLetterSound(letter, callback) {
             let soundFile = letter.toLowerCase();
-            if (letter === 'É') soundFile = 'e';
+            if (letter === 'Q') soundFile = 'c';
+            if (letter === 'K') soundFile = 'c';
+            if (letter === 'Y') soundFile = 'i';
             if (letter === 'Â') soundFile = 'a';
             
-            const audio = new Audio(`sons/phonemes/${soundFile}.mp3`);
+            const audio = new Audio(`phonemes/${soundFile}.mp3`);
             audio.volume = 0.8;
             
             // Quand le son est terminé, exécuter le callback
@@ -880,7 +893,7 @@
 
         function playWord(word, callback) {
             isPlayingSound = true;
-            const audio = new Audio(`sons/mots/${word.toLowerCase()}.mp3`);
+            const audio = new Audio(`mots/${word.toLowerCase()}.mp3`);
             audio.volume = 0.8;
             
             audio.onended = function() {

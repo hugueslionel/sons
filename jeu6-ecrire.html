@@ -874,31 +874,57 @@
         function selectLetter(letter, btn) {
             // Empêcher les clics pendant la vérification
             if (isChecking) return;
-            
+    
             // Désactiver temporairement tous les boutons
             disableAlphabetButtons();
-            
+    
             playLetterSound(letter, function() {
                 // Cette fonction est appelée quand le son est terminé
                 const currentWord = currentLevel.words[currentWordIndex];
                 let letterPlaced = false;
-                
-                // Trouver la première case vide et y placer la lettre
-                for (let i = 0; i < userInput.length; i++) {
-                    if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
-                        userInput[i] = letter;
-                        displayWordBoxes();
-                        letterPlaced = true;
-                        
-                        // Vérifier si le mot est complet
-                        if (!userInput.includes('')) {
-                            setTimeout(() => checkWord(), 300);
+        
+                // Déterminer si c'est un digramme (2 lettres)
+                const isDigramme = ['OU', 'IN', 'ON', 'AN', 'CH', 'OI'].includes(letter);
+                const lettersToPlace = isDigramme ? letter.split('') : [letter];
+        
+                // Pour les digrammes, on cherche une paire de cases vides consécutives
+                if (isDigramme) {
+                    // Chercher deux cases vides consécutives
+                    for (let i = 0; i < userInput.length - 1; i++) {
+                        if (!currentWord.lockedLetters.includes(i) && !userInput[i] &&
+                            !currentWord.lockedLetters.includes(i + 1) && !userInput[i + 1]) {
+                    
+                            // Placer les deux lettres du digramme
+                            userInput[i] = lettersToPlace[0];
+                            userInput[i + 1] = lettersToPlace[1];
+                            displayWordBoxes();
+                            letterPlaced = true;
+                    
+                            // Vérifier si le mot est complet
+                            if (!userInput.includes('')) {
+                                setTimeout(() => checkWord(), 300);
+                            }
+                            break; // Sortir après avoir placé le digramme
                         }
-                        break; // IMPORTANT : sortir de la boucle après avoir placé une lettre
+                    }
+                } else {
+                    // Pour une lettre simple, logique originale
+                    for (let i = 0; i < userInput.length; i++) {
+                        if (!currentWord.lockedLetters.includes(i) && !userInput[i]) {
+                            userInput[i] = letter;
+                            displayWordBoxes();
+                            letterPlaced = true;
+                    
+                            // Vérifier si le mot est complet
+                            if (!userInput.includes('')) {
+                                setTimeout(() => checkWord(), 300);
+                            }
+                            break; // IMPORTANT : sortir de la boucle après avoir placé une lettre
+                        }
                     }
                 }
-                
-                // Si aucune lettre n'a été placée (toutes les cases sont pleines)
+        
+                // Si aucune lettre n'a été placée (toutes les cases sont pleines ou pas de place pour digramme)
                 if (!letterPlaced) {
                     // Réactiver les boutons
                     setTimeout(() => {
@@ -912,7 +938,6 @@
                 }
             });
         }
-
         function playLetterSound(letter, callback) {
             let soundFile = letter.toLowerCase();
             if (letter === 'Q') soundFile = 'c';

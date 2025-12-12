@@ -774,19 +774,24 @@
         function startLevel(level) {
             currentLevel = LEVELS[level];
             if (!currentLevel || currentLevel.words.length === 0) return;
-            
+    
             currentLevelNumber = level;
-            currentWordIndex = 0;
+    
+            // Récupérer la progression sauvegardée pour ce niveau
+            const progress = getLevelProgress(level);
+            currentWordIndex = progress.currentWordIndex || 0;
+    
+            // Réinitialiser score et erreurs pour la session en cours
             score = 0;
             errors = 0;
-            
+    
             updateScore();
             updateProgress();
-            
+    
             document.getElementById('levelSelector').style.display = 'none';
             document.getElementById('gameBoard').style.display = 'block';
             document.getElementById('gameOver').style.display = 'none';
-            
+    
             initAlphabet();
             loadWord();
         }
@@ -1084,12 +1089,12 @@
         function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
             const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
             const currentStudentName = getCurrentStudentName();
-            
+    
             if (currentStudentName && students[currentStudentName]) {
                 const student = students[currentStudentName];
-                
+        
                 student.statistiques.sessionsJouees++;
-                
+        
                 if (!student.resultatsParJeu['ecrire-mots']) {
                     student.resultatsParJeu['ecrire-mots'] = {
                         partiesJouees: 0,
@@ -1097,22 +1102,32 @@
                         totalCorrect: 0,
                         totalErrors: 0,
                         level1Completed: false,
-                        level2Completed: false
+                        level2Completed: false,
+                        level1Progress: { currentWordIndex: 0 },
+                        level2Progress: { currentWordIndex: 0 },
+                        level3Progress: { currentWordIndex: 0 }
                     };
                 }
-                
+        
                 const ecrireStats = student.resultatsParJeu['ecrire-mots'];
                 ecrireStats.partiesJouees++;
                 ecrireStats.meilleurScore = Math.max(ecrireStats.meilleurScore, finalScore);
                 ecrireStats.totalCorrect += correct;
                 ecrireStats.totalErrors += wrongAnswers;
-                
+        
+                // Sauvegarder la progression du niveau en cours
+                if (currentLevelNumber) {
+                    ecrireStats[`level${currentLevelNumber}Progress`] = {
+                        currentWordIndex: currentWordIndex
+                    };
+                }
+        
                 if (currentLevelNumber === 1 && percentage >= 80) {
                     ecrireStats.level1Completed = true;
                 } else if (currentLevelNumber === 2 && percentage >= 80) {
                     ecrireStats.level2Completed = true;
                 }
-                
+        
                 localStorage.setItem('lecture_students', JSON.stringify(students));
             }
         }

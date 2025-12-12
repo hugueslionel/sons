@@ -771,6 +771,24 @@
             };
         }
 
+        function getLevelProgress(level) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const ecrireStats = students[currentStudentName].resultatsParJeu['ecrire-mots'] || {};
+                const levelProgress = ecrireStats[`level${level}Progress`] || {};
+        
+                return {
+                    currentWordIndex: levelProgress.currentWordIndex || 0
+                };
+            }
+    
+            return {
+                currentWordIndex: 0
+            };
+        }
+
         function startLevel(level) {
             currentLevel = LEVELS[level];
             if (!currentLevel || currentLevel.words.length === 0) return;

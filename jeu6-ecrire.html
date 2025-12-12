@@ -1071,17 +1071,17 @@
         function endGame() {
             const correctWords = currentLevel.words.length - errors;
             const percentage = Math.round((correctWords / currentLevel.words.length) * 100);
-            
+    
             document.getElementById('finalCorrect').textContent = correctWords;
             document.getElementById('finalErrors').textContent = errors;
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalPercentage').textContent = percentage + '%';
-            
+    
             saveGameStats(correctWords, errors, score, percentage);
-            
+    
             document.getElementById('gameBoard').style.display = 'none';
             document.getElementById('gameOver').style.display = 'block';
-            
+    
             // Réinitialiser les états
             isChecking = false;
         }
@@ -1158,7 +1158,19 @@
 
         function restartGame() {
             if (currentLevelNumber) {
-                startLevel(currentLevelNumber);
+                // Toujours reprendre la progression sauvegardée
+                const progress = getLevelProgress(currentLevelNumber);
+                currentWordIndex = progress.currentWordIndex || 0;
+        
+                // Réinitialiser seulement score et erreurs de la session
+                score = 0;
+                errors = 0;
+                updateScore();
+                updateProgress();
+                loadWord();
+        
+                document.getElementById('gameOver').style.display = 'none';
+                document.getElementById('gameBoard').style.display = 'block';
             }
         }
 

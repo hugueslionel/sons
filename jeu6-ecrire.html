@@ -1071,10 +1071,13 @@
             bravo.className = 'bravo-message';
             bravo.textContent = 'BRAVO !';
             document.body.appendChild(bravo);
-            
+    
+            // Supprimer après 1.5 secondes (plus long pour être visible)
             setTimeout(() => {
-                bravo.remove();
-            }, 1000);
+                if (bravo.parentNode) {
+                    bravo.remove();
+                }
+            }, 1500);
         }
 
         function updateScore() {

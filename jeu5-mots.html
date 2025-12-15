@@ -150,14 +150,44 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
+        .word-text-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .word-text {
             font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
             font-size: 4em;
             color: white;
             font-weight: bold;
-            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             text-transform: uppercase;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .word-sound-main {
+            background: #00b894;
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+        }
+
+        .word-sound-main:hover {
+            background: #00a085;
+            transform: scale(1.1);
         }
 
         .word-instruction {
@@ -210,7 +240,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            position: relative;
         }
 
         .word-choice:hover:not(.disabled) {
@@ -273,17 +302,6 @@
             border-color: #e17055 !important;
             background: rgba(225, 112, 85, 0.1) !important;
             animation: wrongAnim 0.5s ease-in-out;
-        }
-
-        .word-choice.current-target {
-            animation: pulseTarget 1.5s infinite;
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        @keyframes pulseTarget {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         /* Styles pour les phrases (niveau 3) */
@@ -561,10 +579,13 @@
         <!-- Game board pour niveaux 1 et 2 (mots) -->
         <div id="gameBoardWords" class="game-board">
             <div class="word-display">
-                <div class="word-instruction">Trouve le mot :</div>
-                <div class="word-text" id="currentWord"></div>
+                <div class="word-instruction">Trouve l'image qui correspond au mot :</div>
+                <div class="word-text-container">
+                    <div class="word-text" id="currentWord"></div>
+                    <button class="word-sound-main" onclick="playCurrentWordSound()">🔊</button>
+                </div>
                 <div class="word-controls">
-                    <button class="sound-btn" onclick="playCurrentWordSound()">🔊 Écouter le mot</button>
+                    <button class="sound-btn" onclick="playCurrentWordSound()">🔊 Écouter à nouveau</button>
                 </div>
             </div>
 
@@ -852,15 +873,9 @@
             
             // Réinitialiser les styles de toutes les cartes
             Object.values(wordChoiceElements).forEach(element => {
-                element.classList.remove('current-target', 'correct', 'wrong', 'disabled');
+                element.classList.remove('correct', 'wrong', 'disabled');
                 element.style.cursor = 'pointer';
             });
-            
-            // Mettre en surbrillance la carte cible
-            const targetElement = wordChoiceElements[currentTargetWord.id];
-            if (targetElement) {
-                targetElement.classList.add('current-target');
-            }
             
             updateProgress();
 
@@ -932,7 +947,6 @@
             if (selectedItem.id === currentTargetWord.id) {
                 isProcessing = true;
                 element.classList.add('correct');
-                element.classList.remove('current-target');
                 element.classList.add('disabled');
                 element.style.cursor = 'not-allowed';
                 
@@ -948,14 +962,10 @@
                 }, 1500);
             } else {
                 element.classList.add('wrong');
-                element.classList.add('disabled');
-                element.style.cursor = 'not-allowed';
                 errors++;
                 
                 setTimeout(() => {
                     element.classList.remove('wrong');
-                    element.classList.remove('disabled');
-                    element.style.cursor = 'pointer';
                 }, 500);
             }
         }

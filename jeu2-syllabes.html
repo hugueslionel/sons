@@ -531,26 +531,73 @@
         function startLevel(level) {
             currentLevel = LEVELS[level];
             if (!currentLevel) return;
-            
+    
             currentLevelNumber = level;
-            
+    
+            // Récupérer la progression sauvegardée
+            const progress = getLevelProgress(level);
+    
+            // Créer la liste mélangée (toujours la même manière pour la session)
             shuffledSyllables = [...currentLevel.syllables];
             shuffleArray(shuffledSyllables);
-            
-            currentQuestionIndex = 0;
+    
+            // Reprendre à la dernière syllabe non réussie
+            currentQuestionIndex = progress.currentQuestionIndex || 0;
+    
+            // Vérifier que l'index ne dépasse pas le nombre de syllabes
+            if (currentQuestionIndex >= shuffledSyllables.length) {
+        currentQuestionIndex = 0; // Recommencer depuis le début
+            }
+    
+            // Réinitialiser score et erreurs pour la session en cours
             score = 0;
             correctAnswers = 0;
             errors = 0;
-            
+    
             updateScore();
             updateProgress();
-            
+    
             document.getElementById('levelSelector').style.display = 'none';
             document.getElementById('gameBoard').style.display = 'block';
             document.getElementById('gameOver').style.display = 'none';
-            
+    
             showNextQuestion();
         }
+
+        function saveQuestionProgress() {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const student = students[currentStudentName];
+        
+                if (!student.resultatsParJeu['lire-syllabes']) {
+                    student.resultatsParJeu['lire-syllabes'] = {
+                        partiesJouees: 0,
+                        meilleurScore: 0,
+                        totalCorrect: 0,
+                        totalErrors: 0,
+                        level1Completed: false,
+                        level2Completed: false,
+                        level1Progress: { currentQuestionIndex: 0 },
+                        level2Progress: { currentQuestionIndex: 0 },
+                        level3Progress: { currentQuestionIndex: 0 }
+                     };
+                }
+        
+                const syllabesStats = student.resultatsParJeu['lire-syllabes'];
+        
+                // Sauvegarder la progression actuelle
+                if (currentLevelNumber) {
+                    syllabesStats[`level${currentLevelNumber}Progress`] = {
+                        currentQuestionIndex: currentQuestionIndex + 1 // +1 car on passe à la suivante
+                    };
+                }
+        
+                localStorage.setItem('lecture_students', JSON.stringify(students));
+            }
+        }
+
 
         function showNextQuestion() {
             if (currentQuestionIndex >= shuffledSyllables.length) {
@@ -593,19 +640,22 @@
 
         function checkAnswer(selectedSyllable, correctSyllable, btnElement) {
             if (isProcessing) return;
-            
+    
             if (selectedSyllable === correctSyllable) {
                 isProcessing = true;
                 btnElement.classList.add('correct');
                 correctAnswers++;
                 score += 10;
                 updateScore();
-                
+        
                 const allButtons = document.querySelectorAll('.choice-btn');
                 allButtons.forEach(btn => btn.disabled = true);
-                
+        
+                // Sauvegarder la progression AVANT de passer à la question suivante
+                saveQuestionProgress();
+        
                 playSyllableSound(correctSyllable);
-                
+        
                 setTimeout(() => {
                     currentQuestionIndex++;
                     showNextQuestion();
@@ -614,11 +664,29 @@
                 btnElement.classList.add('wrong');
                 btnElement.disabled = true;
                 errors++;
-                
+        
                 setTimeout(() => {
                     btnElement.classList.remove('wrong');
                 }, 500);
             }
+        }
+
+        function getLevelProgress(level) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const syllabesStats = students[currentStudentName].resultatsParJeu?.['lire-syllabes'] || {};
+                const levelProgress = syllabesStats[`level${level}Progress`] || {};
+        
+                return {
+                    currentQuestionIndex: levelProgress.currentQuestionIndex || 0
+                };
+            }
+    
+            return {
+                currentQuestionIndex: 0
+            };
         }
 
         function playCurrentSound() {
@@ -655,33 +723,35 @@
             document.getElementById('totalQuestions').textContent = shuffledSyllables.length;
         }
 
+        
         function endGame() {
             const percentage = Math.round((correctAnswers / shuffledSyllables.length) * 100);
-            
+    
             document.getElementById('finalCorrect').textContent = correctAnswers;
             document.getElementById('finalErrors').textContent = errors;
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalPercentage').textContent = percentage + '%';
-            
+    
             saveGameStats(correctAnswers, errors, score, percentage);
-            
+    
             document.getElementById('gameBoard').style.display = 'none';
             document.getElementById('gameOver').style.display = 'block';
-            
+    
+            // Retour automatique au menu après 2 secondes (comme le jeu 1)
             setTimeout(() => {
                 showLevelSelector();
-            }, 5000);
+            }, 2000);
         }
 
         function saveGameStats(correct, wrongAnswers, finalScore, percentage) {
             const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
             const currentStudentName = getCurrentStudentName();
-            
+    
             if (currentStudentName && students[currentStudentName]) {
                 const student = students[currentStudentName];
-                
+        
                 student.statistiques.sessionsJouees++;
-                
+        
                 if (!student.resultatsParJeu['lire-syllabes']) {
                     student.resultatsParJeu['lire-syllabes'] = {
                         partiesJouees: 0,
@@ -689,23 +759,39 @@
                         totalCorrect: 0,
                         totalErrors: 0,
                         level1Completed: false,
-                        level2Completed: false
+                        level2Completed: false,
+                        level1Progress: { currentQuestionIndex: 0 },
+                        level2Progress: { currentQuestionIndex: 0 },
+                        level3Progress: { currentQuestionIndex: 0 }
                     };
                 }
-                
+        
                 const syllabesStats = student.resultatsParJeu['lire-syllabes'];
                 syllabesStats.partiesJouees++;
                 syllabesStats.meilleurScore = Math.max(syllabesStats.meilleurScore, finalScore);
                 syllabesStats.totalCorrect += correct;
                 syllabesStats.totalErrors += wrongAnswers;
-                
-                if (currentLevelNumber === 1 && percentage >= 80) {
-                    syllabesStats.level1Completed = true;
-                } else if (currentLevelNumber === 2 && percentage >= 80) {
-                    syllabesStats.level2Completed = true;
+        
+                // Mettre à jour les flags de niveau complété
+                if (currentLevelNumber) {
+                    if (percentage >= 80) {
+                        if (currentLevelNumber === 1) {
+                            syllabesStats.level1Completed = true;
+                        } else if (currentLevelNumber === 2) {
+                            syllabesStats.level2Completed = true;
+                        }
+                    }
+            
+                    // Réinitialiser la progression à 0 quand le niveau est terminé
+                    syllabesStats[`level${currentLevelNumber}Progress`] = {
+                        currentQuestionIndex: 0
+                    };
                 }
-                
+        
                 localStorage.setItem('lecture_students', JSON.stringify(students));
+        
+                // Mettre à jour les boutons de niveau
+                updateLevelButtons();
             }
         }
 
@@ -737,10 +823,29 @@
 
         function restartGame() {
             if (currentLevelNumber) {
-                startLevel(currentLevelNumber);
+                // Reprendre la progression sauvegardée
+                const progress = getLevelProgress(currentLevelNumber);
+                currentQuestionIndex = progress.currentQuestionIndex || 0;
+        
+                // Vérifier que l'index ne dépasse pas le nombre de syllabes
+                if (currentQuestionIndex >= shuffledSyllables.length) {
+                    currentQuestionIndex = 0;
+                }
+        
+                // Réinitialiser seulement score et erreurs de la session
+                score = 0;
+                correctAnswers = 0;
+                errors = 0;
+                updateScore();
+        
+                document.getElementById('gameOver').style.display = 'none';
+                document.getElementById('gameBoard').style.display = 'block';
+        
+                showNextQuestion();
             }
         }
 
+        
         function backToLevels() {
             showLevelSelector();
         }

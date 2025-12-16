@@ -158,16 +158,10 @@
             margin-bottom: 20px;
         }
 
-        .word-text {
-            font-family: 'ScriptEcole2', 'Comic Sans MS', cursive;
-            font-size: 4em;
-            color: white;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
+        .word-image {
+            height: 120px;
+            max-width: 100%;
+            object-fit: contain;
         }
 
         .word-sound-main {
@@ -293,15 +287,11 @@
         }
 
         .word-choice.correct {
-            border-color: #00b894 !important;
-            background: rgba(0, 184, 148, 0.1) !important;
-            animation: correctAnim 0.6s ease-in-out;
+            animation: correctAnim 1s ease-in-out;
         }
 
         .word-choice.wrong {
-            border-color: #e17055 !important;
-            background: rgba(225, 112, 85, 0.1) !important;
-            animation: wrongAnim 0.5s ease-in-out;
+            animation: wrongAnim 1s ease-in-out;
         }
 
         /* Styles pour les phrases (niveau 3) */
@@ -395,14 +385,27 @@
 
         /* Styles communs */
         @keyframes correctAnim {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% { 
+                border-color: #a29bfe;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            }
+            50% { 
+                border-color: #00b894;
+                box-shadow: 0 0 20px rgba(0, 184, 148, 0.8);
+                background: rgba(0, 184, 148, 0.1);
+            }
         }
 
         @keyframes wrongAnim {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            0%, 100% { 
+                border-color: #a29bfe;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            }
+            50% { 
+                border-color: #e17055;
+                box-shadow: 0 0 20px rgba(225, 112, 85, 0.8);
+                background: rgba(225, 112, 85, 0.1);
+            }
         }
 
         .game-controls {
@@ -500,8 +503,8 @@
                 text-align: center;
             }
 
-            .word-text {
-                font-size: 3em;
+            .word-image {
+                height: 100px;
             }
 
             .word-choices {
@@ -522,8 +525,8 @@
         }
 
         @media (max-width: 480px) {
-            .word-text {
-                font-size: 2.5em;
+            .word-image {
+                height: 80px;
             }
 
             .word-choices {
@@ -581,7 +584,7 @@
             <div class="word-display">
                 <div class="word-instruction">Trouve l'image qui correspond au mot :</div>
                 <div class="word-text-container">
-                    <div class="word-text" id="currentWord"></div>
+                    <img id="currentWordImage" src="" alt="Mot à lire" class="word-image">
                     <button class="word-sound-main" onclick="playCurrentWordSound()">🔊</button>
                 </div>
                 <div class="word-controls">
@@ -655,32 +658,152 @@
                 name: "Mots simples",
                 type: "words",
                 items: [
-                    { id: 1,  word: "Mot 1", image: "lecture/mot1.jpeg", sound: "sons/mots/mot1.mp3" },
-                    { id: 2,  word: "Mot 2", image: "lecture/mot2.jpeg", sound: "sons/mots/mot2.mp3" },
-                    { id: 3,  word: "Mot 3", image: "lecture/mot3.jpeg", sound: "sons/mots/mot3.mp3" },
-                    { id: 4,  word: "Mot 4", image: "lecture/mot4.jpeg", sound: "sons/mots/mot4.mp3" },
-                    { id: 5,  word: "Mot 5", image: "lecture/mot5.jpeg", sound: "sons/mots/mot5.mp3" },
-                    { id: 6,  word: "Mot 6", image: "lecture/mot6.jpeg", sound: "sons/mots/mot6.mp3" },
-                    { id: 7,  word: "Mot 7", image: "lecture/mot7.jpeg", sound: "sons/mots/mot7.mp3" },
-                    { id: 8,  word: "Mot 8", image: "lecture/mot8.jpeg", sound: "sons/mots/mot8.mp3" },
-                    { id: 9,  word: "Mot 9", image: "lecture/mot9.jpeg", sound: "sons/mots/mot9.mp3" },
-                    { id: 10, word: "Mot 10", image: "lecture/mot10.jpeg", sound: "sons/mots/mot10.mp3" }
+                    { 
+                        id: 1,  
+                        word: "rôti", 
+                        image: "lecture/images/rôti.jpeg", 
+                        writtenImage: "lecture/ecrit/rôti.jpeg",
+                        sound: "sons/mots/rôti.mp3" 
+                    },
+                    { 
+                        id: 2,  
+                        word: "lilas", 
+                        image: "lecture/images/lilas.jpeg", 
+                        writtenImage: "lecture/ecrit/lilas.jpeg",
+                        sound: "sons/mots/lilas.mp3" 
+                    },
+                    { 
+                        id: 3,  
+                        word: "rire", 
+                        image: "lecture/images/rire.jpeg", 
+                        writtenImage: "lecture/ecrit/rire.jpeg",
+                        sound: "sons/mots/rire.mp3" 
+                    },
+                    { 
+                        id: 4,  
+                        word: "sirop", 
+                        image: "lecture/images/sirop.jpeg", 
+                        writtenImage: "lecture/ecrit/sirop.jpeg",
+                        sound: "sons/mots/sirop.mp3" 
+                    },
+                    { 
+                        id: 5,  
+                        word: "tasse", 
+                        image: "lecture/images/tasse.jpeg", 
+                        writtenImage: "lecture/ecrit/tasse.jpeg",
+                        sound: "sons/mots/tasse.mp3" 
+                    },
+                    { 
+                        id: 6,  
+                        word: "patte", 
+                        image: "lecture/images/patte.jpeg", 
+                        writtenImage: "lecture/ecrit/patte.jpeg",
+                        sound: "sons/mots/patte.mp3" 
+                    },
+                    { 
+                        id: 7,  
+                        word: "zéro", 
+                        image: "lecture/images/zéro.jpeg", 
+                        writtenImage: "lecture/ecrit/zéro.jpeg",
+                        sound: "sons/mots/zéro.mp3" 
+                    },
+                    { 
+                        id: 8,  
+                        word: "télé", 
+                        image: "lecture/images/télé.jpeg", 
+                        writtenImage: "lecture/ecrit/télé.jpeg",
+                        sound: "sons/mots/télé.mp3" 
+                    },
+                    { 
+                        id: 9,  
+                        word: "cube", 
+                        image: "lecture/images/cube.jpeg", 
+                        writtenImage: "lecture/ecrit/cube.jpeg",
+                        sound: "sons/mots/cube.mp3" 
+                    },
+                    { 
+                        id: 10, 
+                        word: "café", 
+                        image: "lecture/images/café.jpeg", 
+                        writtenImage: "lecture/ecrit/café.jpeg",
+                        sound: "sons/mots/café.mp3" 
+                    }
                 ]
             },
             2: {
                 name: "Mots intermédiaires",
                 type: "words",
                 items: [
-                    { id: 11, word: "Mot 11", image: "lecture/mot11.jpeg", sound: "sons/mots/mot11.mp3" },
-                    { id: 12, word: "Mot 12", image: "lecture/mot12.jpeg", sound: "sons/mots/mot12.mp3" },
-                    { id: 13, word: "Mot 13", image: "lecture/mot13.jpeg", sound: "sons/mots/mot13.mp3" },
-                    { id: 14, word: "Mot 14", image: "lecture/mot14.jpeg", sound: "sons/mots/mot14.mp3" },
-                    { id: 15, word: "Mot 15", image: "lecture/mot15.jpeg", sound: "sons/mots/mot15.mp3" },
-                    { id: 16, word: "Mot 16", image: "lecture/mot16.jpeg", sound: "sons/mots/mot16.mp3" },
-                    { id: 17, word: "Mot 17", image: "lecture/mot17.jpeg", sound: "sons/mots/mot17.mp3" },
-                    { id: 18, word: "Mot 18", image: "lecture/mot18.jpeg", sound: "sons/mots/mot18.mp3" },
-                    { id: 19, word: "Mot 19", image: "lecture/mot19.jpeg", sound: "sons/mots/mot19.mp3" },
-                    { id: 20, word: "Mot 20", image: "lecture/mot20.jpeg", sound: "sons/mots/mot20.mp3" }
+                    { 
+                        id: 11, 
+                        word: "Mot 11", 
+                        image: "lecture/images/mot11.jpeg", 
+                        writtenImage: "lecture/ecrit/mot11.jpeg",
+                        sound: "sons/mots/mot11.mp3" 
+                    },
+                    { 
+                        id: 12, 
+                        word: "Mot 12", 
+                        image: "lecture/images/mot12.jpeg", 
+                        writtenImage: "lecture/ecrit/mot12.jpeg",
+                        sound: "sons/mots/mot12.mp3" 
+                    },
+                    { 
+                        id: 13, 
+                        word: "Mot 13", 
+                        image: "lecture/images/mot13.jpeg", 
+                        writtenImage: "lecture/ecrit/mot13.jpeg",
+                        sound: "sons/mots/mot13.mp3" 
+                    },
+                    { 
+                        id: 14, 
+                        word: "Mot 14", 
+                        image: "lecture/images/mot14.jpeg", 
+                        writtenImage: "lecture/ecrit/mot14.jpeg",
+                        sound: "sons/mots/mot14.mp3" 
+                    },
+                    { 
+                        id: 15, 
+                        word: "Mot 15", 
+                        image: "lecture/images/mot15.jpeg", 
+                        writtenImage: "lecture/ecrit/mot15.jpeg",
+                        sound: "sons/mots/mot15.mp3" 
+                    },
+                    { 
+                        id: 16, 
+                        word: "Mot 16", 
+                        image: "lecture/images/mot16.jpeg", 
+                        writtenImage: "lecture/ecrit/mot16.jpeg",
+                        sound: "sons/mots/mot16.mp3" 
+                    },
+                    { 
+                        id: 17, 
+                        word: "Mot 17", 
+                        image: "lecture/images/mot17.jpeg", 
+                        writtenImage: "lecture/ecrit/mot17.jpeg",
+                        sound: "sons/mots/mot17.mp3" 
+                    },
+                    { 
+                        id: 18, 
+                        word: "Mot 18", 
+                        image: "lecture/images/mot18.jpeg", 
+                        writtenImage: "lecture/ecrit/mot18.jpeg",
+                        sound: "sons/mots/mot18.mp3" 
+                    },
+                    { 
+                        id: 19, 
+                        word: "Mot 19", 
+                        image: "lecture/images/mot19.jpeg", 
+                        writtenImage: "lecture/ecrit/mot19.jpeg",
+                        sound: "sons/mots/mot19.mp3" 
+                    },
+                    { 
+                        id: 20, 
+                        word: "Mot 20", 
+                        image: "lecture/images/mot20.jpeg", 
+                        writtenImage: "lecture/ecrit/mot20.jpeg",
+                        sound: "sons/mots/mot20.mp3" 
+                    }
                 ]
             },
             3: {
@@ -705,8 +828,6 @@
         let currentLevel = null;
         let currentLevelNumber = null;
         let currentQuestionIndex = 0;
-        let shuffledOrder = [];
-        let currentTargetWord = null;
         let score = 0;
         let correctAnswers = 0;
         let errors = 0;
@@ -785,10 +906,6 @@
             
             currentLevelNumber = level;
             
-            // Créer un ordre aléatoire des mots
-            shuffledOrder = [...currentLevel.items];
-            shuffleArray(shuffledOrder);
-            
             currentQuestionIndex = 0;
             score = 0;
             correctAnswers = 0;
@@ -816,7 +933,7 @@
             const choicesGrid = document.getElementById('wordChoicesGrid');
             choicesGrid.innerHTML = '';
             
-            // Afficher toutes les 10 cartes
+            // Afficher toutes les 10 cartes dans l'ordre
             currentLevel.items.forEach(item => {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.className = 'word-choice';
@@ -827,7 +944,7 @@
                 img.src = item.image;
                 img.alt = item.word;
                 img.onerror = function() {
-                    this.src = 'https://via.placeholder.com/200x150?text=Image+manquante';
+                    this.src = 'https://via.placeholder.com/200x150?text=' + encodeURIComponent(item.word);
                 };
                 
                 const infoDiv = document.createElement('div');
@@ -855,27 +972,26 @@
                 wordChoiceElements[item.id] = choiceDiv;
             });
             
-            // Démarrer avec le premier mot
+            // Démarrer avec le premier mot (rôti)
             showNextWord();
         }
 
         function showNextWord() {
-            if (currentQuestionIndex >= shuffledOrder.length) {
+            if (currentQuestionIndex >= currentLevel.items.length) {
                 endGame();
                 return;
             }
 
             isProcessing = false;
-            currentTargetWord = shuffledOrder[currentQuestionIndex];
+            const currentTargetWord = currentLevel.items[currentQuestionIndex];
             
-            // Mettre à jour l'affichage du mot à trouver
-            document.getElementById('currentWord').textContent = currentTargetWord.word;
-            
-            // Réinitialiser les styles de toutes les cartes
-            Object.values(wordChoiceElements).forEach(element => {
-                element.classList.remove('correct', 'wrong', 'disabled');
-                element.style.cursor = 'pointer';
-            });
+            // Mettre à jour l'image du mot à trouver
+            const wordImageElement = document.getElementById('currentWordImage');
+            wordImageElement.src = currentTargetWord.writtenImage;
+            wordImageElement.alt = currentTargetWord.word;
+            wordImageElement.onerror = function() {
+                this.src = 'https://via.placeholder.com/300x120?text=' + encodeURIComponent(currentTargetWord.word);
+            };
             
             updateProgress();
 
@@ -944,11 +1060,11 @@
         function checkWordAnswer(selectedItem, element) {
             if (isProcessing) return;
             
+            const currentTargetWord = currentLevel.items[currentQuestionIndex];
+            
             if (selectedItem.id === currentTargetWord.id) {
                 isProcessing = true;
                 element.classList.add('correct');
-                element.classList.add('disabled');
-                element.style.cursor = 'not-allowed';
                 
                 correctAnswers++;
                 score += 10;
@@ -957,6 +1073,7 @@
                 playWordSound(selectedItem);
                 
                 setTimeout(() => {
+                    element.classList.remove('correct');
                     currentQuestionIndex++;
                     showNextWord();
                 }, 1500);
@@ -966,7 +1083,7 @@
                 
                 setTimeout(() => {
                     element.classList.remove('wrong');
-                }, 500);
+                }, 1500);
             }
         }
 
@@ -1007,6 +1124,7 @@
         }
 
         function playCurrentWordSound() {
+            const currentTargetWord = currentLevel.items[currentQuestionIndex];
             if (currentTargetWord && currentTargetWord.sound) {
                 playWordSound(currentTargetWord);
             }
@@ -1042,24 +1160,17 @@
             }
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         function updateScore() {
             document.getElementById('score').textContent = score;
         }
 
         function updateProgress() {
             document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-            document.getElementById('totalQuestions').textContent = shuffledOrder.length;
+            document.getElementById('totalQuestions').textContent = currentLevel.items.length;
         }
 
         function endGame() {
-            const percentage = Math.round((correctAnswers / shuffledOrder.length) * 100);
+            const percentage = Math.round((correctAnswers / currentLevel.items.length) * 100);
             
             document.getElementById('finalCorrect').textContent = correctAnswers;
             document.getElementById('finalErrors').textContent = errors;
@@ -1131,8 +1242,6 @@
             currentLevel = null;
             currentLevelNumber = null;
             currentQuestionIndex = 0;
-            shuffledOrder = [];
-            currentTargetWord = null;
             score = 0;
             correctAnswers = 0;
             errors = 0;

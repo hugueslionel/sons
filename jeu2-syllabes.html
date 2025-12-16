@@ -546,7 +546,7 @@
     
             // Vérifier que l'index ne dépasse pas le nombre de syllabes
             if (currentQuestionIndex >= shuffledSyllables.length) {
-        currentQuestionIndex = 0; // Recommencer depuis le début
+                currentQuestionIndex = 0; // Recommencer depuis le début
             }
     
             // Réinitialiser score et erreurs pour la session en cours
@@ -562,6 +562,40 @@
             document.getElementById('gameOver').style.display = 'none';
     
             showNextQuestion();
+        }
+
+        function saveQuestionProgress() {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const student = students[currentStudentName];
+        
+                if (!student.resultatsParJeu['lire-syllabes']) {
+                    student.resultatsParJeu['lire-syllabes'] = {
+                        partiesJouees: 0,
+                        meilleurScore: 0,
+                        totalCorrect: 0,
+                        totalErrors: 0,
+                        level1Completed: false,
+                        level2Completed: false,
+                        level1Progress: { currentQuestionIndex: 0 },
+                        level2Progress: { currentQuestionIndex: 0 },
+                        level3Progress: { currentQuestionIndex: 0 }
+                    };
+                }
+        
+                const syllabesStats = student.resultatsParJeu['lire-syllabes'];
+        
+                // Sauvegarder la progression actuelle
+                if (currentLevelNumber) {
+                    syllabesStats[`level${currentLevelNumber}Progress`] = {
+                        currentQuestionIndex: currentQuestionIndex + 1 // +1 car on passe à la suivante
+                    };
+                }
+        
+                localStorage.setItem('lecture_students', JSON.stringify(students));
+            }
         }
 
         function saveQuestionProgress() {
@@ -670,6 +704,25 @@
                 }, 500);
             }
         }
+
+        function getLevelProgress(level) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const syllabesStats = students[currentStudentName].resultatsParJeu?.['lire-syllabes'] || {};
+                const levelProgress = syllabesStats[`level${level}Progress`] || {};
+        
+                return {
+                    currentQuestionIndex: levelProgress.currentQuestionIndex || 0
+                };
+            }
+    
+            return {
+                currentQuestionIndex: 0
+            };
+        }
+
 
         function getLevelProgress(level) {
             const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');

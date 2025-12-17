@@ -929,47 +929,50 @@
         function displayAllWords() {
             const choicesGrid = document.getElementById('wordChoicesGrid');
             choicesGrid.innerHTML = '';
-            
-            // Afficher toutes les 10 cartes dans l'ordre
-            currentLevel.items.forEach(item => {
+    
+            // Créer une copie mélangée des mots pour l'affichage des cartes
+            const shuffledItems = [...currentLevel.items];
+    
+            // Mélanger l'ordre des cartes (algorithme de Fisher-Yates)
+            for (let i = shuffledItems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledItems[i], shuffledItems[j]] = [shuffledItems[j], shuffledItems[i]];
+            }
+    
+            // Afficher toutes les 10 cartes dans l'ordre mélangé
+            shuffledItems.forEach(item => {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.className = 'word-choice';
                 choiceDiv.dataset.wordId = item.id;
                 choiceDiv.onclick = () => checkWordAnswer(item, choiceDiv);
-                
+        
                 const img = document.createElement('img');
                 img.src = item.image;
                 img.alt = item.word;
                 img.onerror = function() {
                     this.src = 'https://via.placeholder.com/200x150?text=' + encodeURIComponent(item.word);
                 };
-                
+        
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'word-choice-info';
-                
+        
                 const wordSpan = document.createElement('span');
                 wordSpan.textContent = item.word;
-                
-                const soundBtn = document.createElement('button');
-                soundBtn.className = 'word-sound-btn';
-                soundBtn.innerHTML = '🔊';
-                soundBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    playWordSound(item);
-                };
-                
+        
+                // PAS de bouton son sur les cartes
+        
                 infoDiv.appendChild(wordSpan);
-                infoDiv.appendChild(soundBtn);
-                
+                // PAS de bouton son ajouté à infoDiv
+        
                 choiceDiv.appendChild(img);
                 choiceDiv.appendChild(infoDiv);
                 choicesGrid.appendChild(choiceDiv);
-                
+        
                 // Stocker l'élément pour référence ultérieure
                 wordChoiceElements[item.id] = choiceDiv;
             });
-            
-            // Démarrer avec le premier mot (rôti)
+    
+            // Démarrer avec le premier mot
             showNextWord();
         }
 
@@ -993,9 +996,9 @@
             updateProgress();
 
             // Délai avant de jouer automatiquement le son
-            setTimeout(() => {
-                playCurrentWordSound();
-            }, 800);
+            //setTimeout(() => {
+            //    playCurrentWordSound();
+            //}, 800);
         }
 
         function showNextQuestion() {

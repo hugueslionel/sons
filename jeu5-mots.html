@@ -1362,16 +1362,15 @@
         
                 // Mettre à jour les flags de niveau complété
                 if (currentLevelNumber) {
-                    if (percentage >= 80) {
+                    // MARQUER LE NIVEAU COMME TERMINÉ QUAND ON ARRIVE À LA FIN
+                    if (currentQuestionIndex >= shuffledOrder.length) {
                         if (currentLevelNumber === 1) {
                             gameStats.level1Completed = true;
                         } else if (currentLevelNumber === 2) {
                             gameStats.level2Completed = true;
                         }
-                    }
-            
-                    // Si le niveau est terminé, réinitialiser la progression
-                    if (currentQuestionIndex >= shuffledOrder.length) {
+                        
+                        // Réinitialiser la progression à 0 quand le niveau est terminé
                         gameStats[`level${currentLevelNumber}Progress`] = {
                             currentQuestionIndex: 0
                         };

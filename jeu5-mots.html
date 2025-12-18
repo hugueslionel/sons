@@ -140,6 +140,7 @@
             margin-bottom: 20px;
         }
 
+        /* Styles pour les mots (niveaux 1 et 2) */
         .word-display {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             padding: 30px;
@@ -293,6 +294,7 @@
             animation: wrongAnim 1s ease-in-out;
         }
 
+        /* Styles pour les phrases (niveau 3) */
         .sentence-display {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             padding: 30px;
@@ -381,10 +383,12 @@
             animation: wrongAnim 0.5s ease-in-out;
         }
 
+        /* Styles communs */
         @keyframes correctAnim {
             0%, 100% { 
                 border-color: #a29bfe;
                 box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+                background: white;
             }
             50% { 
                 border-color: #00b894;
@@ -397,6 +401,7 @@
             0%, 100% { 
                 border-color: #a29bfe;
                 box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+                background: white;
             }
             50% { 
                 border-color: #e17055;
@@ -656,6 +661,7 @@
         let wordChoiceElements = {};
         let shuffledOrder = [];
         let currentTargetWord = null;
+        let displayOrder = []; // Ordre d'affichage des cartes (mélangé une seule fois)
 
         // Données pour les niveaux
         const LEVELS = {
@@ -832,11 +838,12 @@
 
         // Fonctions utilitaires
         function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
             }
-            return array;
+            return newArray;
         }
 
         function getCurrentStudentName() {
@@ -847,6 +854,49 @@
                 console.log('Erreur lors de la récupération de l\'élève:', error);
                 return null;
             }
+        }
+
+        function saveShuffledOrderToStorage(levelNumber, order) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const student = students[currentStudentName];
+        
+                if (!student.resultatsParJeu['lire-mots-phrases']) {
+                    student.resultatsParJeu['lire-mots-phrases'] = {};
+                }
+        
+                const gameStats = student.resultatsParJeu['lire-mots-phrases'];
+        
+                if (!gameStats[`level${levelNumber}ShuffledOrder`]) {
+                    gameStats[`level${levelNumber}ShuffledOrder`] = order.map(item => item.id);
+                }
+        
+                localStorage.setItem('lecture_students', JSON.stringify(students));
+            }
+        }
+
+        function getShuffledOrderFromStorage(levelNumber) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const gameStats = students[currentStudentName].resultatsParJeu?.['lire-mots-phrases'] || {};
+                const orderIds = gameStats[`level${levelNumber}ShuffledOrder`];
+        
+                if (orderIds && currentLevel) {
+                    // Reconstruire l'ordre à partir des IDs
+                    const orderMap = {};
+                    currentLevel.items.forEach(item => {
+                        orderMap[item.id] = item;
+                    });
+                    
+                    return orderIds.map(id => orderMap[id]).filter(item => item);
+                }
+            }
+    
+            return null;
         }
 
         // Initialisation
@@ -943,17 +993,18 @@
             // Récupérer la progression sauvegardée pour ce niveau
             const progress = getLevelProgress(level);
     
-            // Créer un ordre aléatoire des mots
-            shuffledOrder = [...currentLevel.items];
-            shuffleArray(shuffledOrder);
+            // Récupérer l'ordre mélangé sauvegardé ou en créer un nouveau
+            const savedShuffledOrder = getShuffledOrderFromStorage(level);
+            if (savedShuffledOrder && savedShuffledOrder.length === currentLevel.items.length) {
+                shuffledOrder = savedShuffledOrder;
+            } else {
+                // Créer un nouvel ordre aléatoire des mots et le sauvegarder
+                shuffledOrder = shuffleArray([...currentLevel.items]);
+                saveShuffledOrderToStorage(level, shuffledOrder);
+            }
     
             // Reprendre à la dernière question non réussie
             currentQuestionIndex = progress.currentQuestionIndex || 0;
-    
-            // Vérifier que l'index ne dépasse pas le nombre de questions
-            if (currentQuestionIndex >= shuffledOrder.length) {
-                currentQuestionIndex = 0; // Recommencer depuis le début si déjà fini
-            }
     
             // Réinitialiser score et erreurs pour la session en cours
             score = 0;
@@ -1016,11 +1067,12 @@
             const choicesGrid = document.getElementById('wordChoicesGrid');
             choicesGrid.innerHTML = '';
     
-            // Créer une copie mélangée des mots pour l'affichage des cartes
-            const displayOrder = [...currentLevel.items];
-            shuffleArray(displayOrder);
+            // Mélanger l'affichage des cartes une seule fois
+            if (displayOrder.length === 0) {
+                displayOrder = shuffleArray([...currentLevel.items]);
+            }
     
-            // Afficher toutes les 10 cartes dans l'ordre mélangé
+            // Afficher toutes les cartes dans l'ordre mélangé
             displayOrder.forEach(item => {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.className = 'word-choice';
@@ -1136,8 +1188,6 @@
             if (selectedItem.id === currentTargetWord.id) {
                 isProcessing = true;
                 element.classList.add('correct');
-                element.classList.add('disabled');
-                element.style.cursor = 'not-allowed';
         
                 correctAnswers++;
                 score += 10;
@@ -1149,20 +1199,23 @@
                 playWordSound(selectedItem);
         
                 setTimeout(() => {
+                    // Retirer l'animation après qu'elle soit terminée
+                    element.classList.remove('correct');
+                    
                     currentQuestionIndex++;
                     if (currentQuestionIndex < shuffledOrder.length) {
                         showNextWord();
                     } else {
                         endGame();
                     }
-                }, 1500);
+                }, 1000);
             } else {
                 element.classList.add('wrong');
                 errors++;
         
                 setTimeout(() => {
                     element.classList.remove('wrong');
-                }, 500);
+                }, 1000);
             }
         }
         
@@ -1317,10 +1370,12 @@
                         }
                     }
             
-                    // Réinitialiser la progression à 0 quand le niveau est terminé
-                    gameStats[`level${currentLevelNumber}Progress`] = {
-                        currentQuestionIndex: 0
-                    };
+                    // Si le niveau est terminé, réinitialiser la progression
+                    if (currentQuestionIndex >= shuffledOrder.length) {
+                        gameStats[`level${currentLevelNumber}Progress`] = {
+                            currentQuestionIndex: 0
+                        };
+                    }
                 }
         
                 localStorage.setItem('lecture_students', JSON.stringify(students));
@@ -1340,6 +1395,7 @@
             isProcessing = false;
             wordChoiceElements = {};
             shuffledOrder = [];
+            displayOrder = []; // Réinitialiser l'ordre d'affichage
             currentTargetWord = null;
             
             document.getElementById('score').textContent = '0';
@@ -1349,15 +1405,9 @@
 
         function restartGame() {
             if (currentLevelNumber) {
-                // Reprendre la progression sauvegardée
-                const progress = getLevelProgress(currentLevelNumber);
-                currentQuestionIndex = progress.currentQuestionIndex || 0;
-        
-                // Vérifier que l'index ne dépasse pas le nombre de questions
-                if (currentQuestionIndex >= shuffledOrder.length) {
-                    currentQuestionIndex = 0;
-                }
-        
+                // Pour redémarrer, on repart à zéro
+                currentQuestionIndex = 0;
+                
                 // Réinitialiser seulement score et erreurs de la session
                 score = 0;
                 correctAnswers = 0;

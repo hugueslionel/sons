@@ -140,7 +140,6 @@
             margin-bottom: 20px;
         }
 
-        /* Styles pour les mots (niveaux 1 et 2) */
         .word-display {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             padding: 30px;
@@ -294,7 +293,6 @@
             animation: wrongAnim 1s ease-in-out;
         }
 
-        /* Styles pour les phrases (niveau 3) */
         .sentence-display {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             padding: 30px;
@@ -383,7 +381,6 @@
             animation: wrongAnim 0.5s ease-in-out;
         }
 
-        /* Styles communs */
         @keyframes correctAnim {
             0%, 100% { 
                 border-color: #a29bfe;
@@ -586,7 +583,6 @@
                 <div class="word-text-container">
                     <img id="currentWordImage" src="" alt="Mot à lire" class="word-image">
                 </div>
-               
             </div>
 
             <div class="word-choices" id="wordChoicesGrid"></div>
@@ -649,6 +645,18 @@
     </div>
 
     <script>
+        // Variables globales
+        let currentLevel = null;
+        let currentLevelNumber = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let errors = 0;
+        let isProcessing = false;
+        let wordChoiceElements = {};
+        let shuffledOrder = [];
+        let currentTargetWord = null;
+
         // Données pour les niveaux
         const LEVELS = {
             1: {
@@ -657,70 +665,70 @@
                 items: [
                     { 
                         id: 1,  
-                        
+                        word: "rôti",
                         image: "lecture/images/rôti.jpeg", 
                         writtenImage: "lecture/ecrit/rôti.jpeg",
                         sound: "sons/mots/rôti.mp3" 
                     },
                     { 
                         id: 2,  
-               
+                        word: "lilas",
                         image: "lecture/images/lilas.jpeg", 
                         writtenImage: "lecture/ecrit/lilas.jpeg",
                         sound: "sons/mots/lilas.mp3" 
                     },
                     { 
                         id: 3,  
-                      
+                        word: "rire",
                         image: "lecture/images/rire.jpeg", 
                         writtenImage: "lecture/ecrit/rire.jpeg",
                         sound: "sons/mots/rire.mp3" 
                     },
                     { 
                         id: 4,  
-                     
+                        word: "sirop",
                         image: "lecture/images/sirop.jpeg", 
                         writtenImage: "lecture/ecrit/sirop.jpeg",
                         sound: "sons/mots/sirop.mp3" 
                     },
                     { 
                         id: 5,  
-                       
+                        word: "tasse",
                         image: "lecture/images/tasse.jpeg", 
                         writtenImage: "lecture/ecrit/tasse.jpeg",
                         sound: "sons/mots/tasse.mp3" 
                     },
                     { 
                         id: 6,  
-                       
+                        word: "patte",
                         image: "lecture/images/patte.jpeg", 
                         writtenImage: "lecture/ecrit/patte.jpeg",
                         sound: "sons/mots/patte.mp3" 
                     },
                     { 
                         id: 7,  
-                       
+                        word: "zéro",
                         image: "lecture/images/zéro.jpeg", 
                         writtenImage: "lecture/ecrit/zéro.jpeg",
                         sound: "sons/mots/zéro.mp3" 
                     },
                     { 
                         id: 8,  
-                       
+                        word: "télé",
                         image: "lecture/images/télé.jpeg", 
                         writtenImage: "lecture/ecrit/télé.jpeg",
                         sound: "sons/mots/télé.mp3" 
                     },
                     { 
                         id: 9,  
-
+                        word: "cube",
                         image: "lecture/images/cube.jpeg", 
                         writtenImage: "lecture/ecrit/cube.jpeg",
                         sound: "sons/mots/cube.mp3" 
                     },
                     { 
                         id: 10, 
-                      
+                        word: "café",
                         image: "lecture/images/café.jpeg", 
                         writtenImage: "lecture/ecrit/café.jpeg",
                         sound: "sons/mots/café.mp3" 
@@ -733,70 +741,70 @@
                 items: [
                     { 
                         id: 11, 
-                    
+                        word: "mot11",
                         image: "lecture/images/mot11.jpeg", 
                         writtenImage: "lecture/ecrit/mot11.jpeg",
                         sound: "sons/mots/mot11.mp3" 
                     },
                     { 
                         id: 12, 
-                       
+                        word: "mot12",
                         image: "lecture/images/mot12.jpeg", 
                         writtenImage: "lecture/ecrit/mot12.jpeg",
                         sound: "sons/mots/mot12.mp3" 
                     },
                     { 
                         id: 13, 
-                      
+                        word: "mot13",
                         image: "lecture/images/mot13.jpeg", 
                         writtenImage: "lecture/ecrit/mot13.jpeg",
                         sound: "sons/mots/mot13.mp3" 
                     },
                     { 
                         id: 14, 
-                       
+                        word: "mot14",
                         image: "lecture/images/mot14.jpeg", 
                         writtenImage: "lecture/ecrit/mot14.jpeg",
                         sound: "sons/mots/mot14.mp3" 
                     },
                     { 
                         id: 15, 
-                       
+                        word: "mot15",
                         image: "lecture/images/mot15.jpeg", 
                         writtenImage: "lecture/ecrit/mot15.jpeg",
                         sound: "sons/mots/mot15.mp3" 
                     },
                     { 
                         id: 16, 
-                     
+                        word: "mot16",
                         image: "lecture/images/mot16.jpeg", 
                         writtenImage: "lecture/ecrit/mot16.jpeg",
                         sound: "sons/mots/mot16.mp3" 
                     },
                     { 
                         id: 17, 
-                       
+                        word: "mot17",
                         image: "lecture/images/mot17.jpeg", 
                         writtenImage: "lecture/ecrit/mot17.jpeg",
                         sound: "sons/mots/mot17.mp3" 
                     },
                     { 
                         id: 18, 
-                       
+                        word: "mot18",
                         image: "lecture/images/mot18.jpeg", 
                         writtenImage: "lecture/ecrit/mot18.jpeg",
                         sound: "sons/mots/mot18.mp3" 
                     },
                     { 
                         id: 19, 
-                        
+                        word: "mot19",
                         image: "lecture/images/mot19.jpeg", 
                         writtenImage: "lecture/ecrit/mot19.jpeg",
                         sound: "sons/mots/mot19.mp3" 
                     },
                     { 
                         id: 20, 
-                       
+                        word: "mot20",
                         image: "lecture/images/mot20.jpeg", 
                         writtenImage: "lecture/ecrit/mot20.jpeg",
                         sound: "sons/mots/mot20.mp3" 
@@ -822,15 +830,26 @@
             });
         }
 
-        let currentLevel = null;
-        let currentLevelNumber = null;
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let correctAnswers = 0;
-        let errors = 0;
-        let isProcessing = false;
-        let wordChoiceElements = {};
+        // Fonctions utilitaires
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
+        function getCurrentStudentName() {
+            try {
+                const currentStudent = JSON.parse(sessionStorage.getItem('currentStudent'));
+                return currentStudent ? currentStudent.nom : null;
+            } catch (error) {
+                console.log('Erreur lors de la récupération de l\'élève:', error);
+                return null;
+            }
+        }
+
+        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             showLevelSelector();
             updateLevelButtons();
@@ -897,6 +916,24 @@
             };
         }
 
+        function getLevelProgress(level) {
+            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
+            const currentStudentName = getCurrentStudentName();
+    
+            if (currentStudentName && students[currentStudentName]) {
+                const gameStats = students[currentStudentName].resultatsParJeu?.['lire-mots-phrases'] || {};
+                const levelProgress = gameStats[`level${level}Progress`] || {};
+        
+                return {
+                    currentQuestionIndex: levelProgress.currentQuestionIndex || 0
+                };
+            }
+    
+            return {
+                currentQuestionIndex: 0
+            };
+        }
+
         function startLevel(level) {
             currentLevel = LEVELS[level];
             if (!currentLevel) return;
@@ -906,7 +943,7 @@
             // Récupérer la progression sauvegardée pour ce niveau
             const progress = getLevelProgress(level);
     
-            // Créer un ordre aléatoire des mots (toujours la même façon)
+            // Créer un ordre aléatoire des mots
             shuffledOrder = [...currentLevel.items];
             shuffleArray(shuffledOrder);
     
@@ -975,40 +1012,16 @@
             }
         }
 
-        function getLevelProgress(level) {
-            const students = JSON.parse(localStorage.getItem('lecture_students') || '{}');
-            const currentStudentName = getCurrentStudentName();
-    
-            if (currentStudentName && students[currentStudentName]) {
-                const gameStats = students[currentStudentName].resultatsParJeu?.['lire-mots-phrases'] || {};
-                const levelProgress = gameStats[`level${level}Progress`] || {};
-        
-                return {
-                    currentQuestionIndex: levelProgress.currentQuestionIndex || 0
-                };
-            }
-    
-            return {
-                currentQuestionIndex: 0
-            };
-        }
-
-
         function displayAllWords() {
             const choicesGrid = document.getElementById('wordChoicesGrid');
             choicesGrid.innerHTML = '';
     
             // Créer une copie mélangée des mots pour l'affichage des cartes
-            const shuffledItems = [...currentLevel.items];
-    
-            // Mélanger l'ordre des cartes (algorithme de Fisher-Yates)
-            for (let i = shuffledItems.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledItems[i], shuffledItems[j]] = [shuffledItems[j], shuffledItems[i]];
-            }
+            const displayOrder = [...currentLevel.items];
+            shuffleArray(displayOrder);
     
             // Afficher toutes les 10 cartes dans l'ordre mélangé
-            shuffledItems.forEach(item => {
+            displayOrder.forEach(item => {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.className = 'word-choice';
                 choiceDiv.dataset.wordId = item.id;
@@ -1027,10 +1040,7 @@
                 const wordSpan = document.createElement('span');
                 wordSpan.textContent = item.word;
         
-                // PAS de bouton son sur les cartes
-        
                 infoDiv.appendChild(wordSpan);
-                // PAS de bouton son ajouté à infoDiv
         
                 choiceDiv.appendChild(img);
                 choiceDiv.appendChild(infoDiv);
@@ -1045,13 +1055,13 @@
         }
 
         function showNextWord() {
-            if (currentQuestionIndex >= currentLevel.items.length) {
+            if (currentQuestionIndex >= shuffledOrder.length) {
                 endGame();
                 return;
             }
 
             isProcessing = false;
-            const currentTargetWord = currentLevel.items[currentQuestionIndex];
+            currentTargetWord = shuffledOrder[currentQuestionIndex];
             
             // Mettre à jour l'image du mot à trouver
             const wordImageElement = document.getElementById('currentWordImage');
@@ -1062,11 +1072,6 @@
             };
             
             updateProgress();
-
-            // Délai avant de jouer automatiquement le son
-            //setTimeout(() => {
-            //    playCurrentWordSound();
-            //}, 800);
         }
 
         function showNextQuestion() {
@@ -1204,9 +1209,7 @@
             }
         }
 
-
         function playCurrentWordSound() {
-            const currentTargetWord = currentLevel.items[currentQuestionIndex];
             if (currentTargetWord && currentTargetWord.sound) {
                 playWordSound(currentTargetWord);
             }
@@ -1248,7 +1251,7 @@
 
         function updateProgress() {
             document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-            document.getElementById('totalQuestions').textContent = currentLevel.items.length;
+            document.getElementById('totalQuestions').textContent = shuffledOrder.length;
         }
 
         function endGame() {
@@ -1327,16 +1330,6 @@
             }
         }
 
-        function getCurrentStudentName() {
-            try {
-                const currentStudent = JSON.parse(sessionStorage.getItem('currentStudent'));
-                return currentStudent ? currentStudent.nom : null;
-            } catch (error) {
-                console.log('Erreur lors de la récupération de l\'élève:', error);
-                return null;
-            }
-        }
-
         function resetGame() {
             currentLevel = null;
             currentLevelNumber = null;
@@ -1346,6 +1339,8 @@
             errors = 0;
             isProcessing = false;
             wordChoiceElements = {};
+            shuffledOrder = [];
+            currentTargetWord = null;
             
             document.getElementById('score').textContent = '0';
             document.getElementById('currentQuestion').textContent = '0';
@@ -1360,7 +1355,7 @@
         
                 // Vérifier que l'index ne dépasse pas le nombre de questions
                 if (currentQuestionIndex >= shuffledOrder.length) {
-            currentQuestionIndex = 0;
+                    currentQuestionIndex = 0;
                 }
         
                 // Réinitialiser seulement score et erreurs de la session

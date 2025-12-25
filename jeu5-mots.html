@@ -1,3 +1,4 @@
+[file content begin]
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -294,7 +295,7 @@
             animation: wrongAnim 1s ease-in-out;
         }
 
-        /* Styles pour les phrases (niveau 3) */
+        /* Styles pour les phrases (niveau 3) - MODIFIÉ */
         .sentence-display {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             padding: 30px;
@@ -302,68 +303,57 @@
             margin-bottom: 30px;
             text-align: center;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .sentence-image {
-            max-width: 300px;
-            max-height: 200px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 500px; /* Image plus grande */
+            max-height: 400px; /* Image plus grande */
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 5px solid white;
         }
 
         .sentence-instruction {
             color: white;
-            font-size: 1.5em;
+            font-size: 1.8em; /* Texte plus grand */
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .sentence-choices {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 600px;
+            justify-content: center;
+            gap: 40px; /* Espacement plus grand */
             margin: 30px auto;
+            max-width: 800px;
         }
 
         .sentence-choice {
             background: white;
-            border: 4px solid #a29bfe;
+            border: 5px solid #a29bfe;
             border-radius: 15px;
-            padding: 20px;
-            text-align: left;
+            width: 120px; /* Carrés plus grands */
+            height: 120px; /* Carrés plus grands */
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .sentence-choice:hover:not(.disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(162, 155, 254, 0.3);
-            border-color: #6c5ce7;
-        }
-
-        .sentence-number {
-            background: #a29bfe;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2em;
+            font-size: 3em; /* Chiffres plus grands */
             font-weight: bold;
+            color: #2d3436;
         }
 
-        .sentence-text {
-            flex: 1;
-            font-size: 1.2em;
-            color: #2d3436;
+        .sentence-choice:hover:not(.disabled) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(162, 155, 254, 0.4);
+            border-color: #6c5ce7;
         }
 
         .sentence-choice.disabled {
@@ -381,6 +371,15 @@
             border-color: #e17055 !important;
             background: rgba(225, 112, 85, 0.1) !important;
             animation: wrongAnim 0.5s ease-in-out;
+        }
+
+        /* Suppression des anciens styles inutiles pour le niveau 3 */
+        .sentence-number {
+            display: none;
+        }
+        
+        .sentence-text {
+            display: none;
         }
 
         /* Styles communs */
@@ -486,6 +485,17 @@
             .word-choices {
                 grid-template-columns: repeat(4, 1fr);
             }
+            
+            .sentence-image {
+                max-width: 400px;
+                max-height: 300px;
+            }
+            
+            .sentence-choice {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5em;
+            }
         }
 
         @media (max-width: 992px) {
@@ -517,12 +527,23 @@
                 height: 120px;
             }
 
-            .sentence-choice {
-                padding: 15px;
+            .sentence-image {
+                max-width: 300px;
+                max-height: 250px;
             }
-
-            .sentence-text {
-                font-size: 1.1em;
+            
+            .sentence-choices {
+                gap: 20px;
+            }
+            
+            .sentence-choice {
+                width: 80px;
+                height: 80px;
+                font-size: 2em;
+            }
+            
+            .sentence-instruction {
+                font-size: 1.5em;
             }
         }
 
@@ -535,12 +556,23 @@
                 grid-template-columns: 1fr;
             }
 
-            .sentence-choices {
-                gap: 10px;
+            .sentence-image {
+                max-width: 250px;
+                max-height: 200px;
             }
-
+            
+            .sentence-choices {
+                gap: 15px;
+            }
+            
             .sentence-choice {
-                padding: 10px;
+                width: 70px;
+                height: 70px;
+                font-size: 1.8em;
+            }
+            
+            .sentence-instruction {
+                font-size: 1.3em;
             }
         }
     </style>
@@ -671,70 +703,70 @@
                 items: [
                     { 
                         id: 1,  
-                  
+                        word: "rôti",
                         image: "lecture/images/rôti.jpeg", 
                         writtenImage: "lecture/ecrit/rôti.jpeg",
                         sound: "sons/mots/rôti.mp3" 
                     },
                     { 
                         id: 2,  
-                       
+                        word: "lilas",
                         image: "lecture/images/lilas.jpeg", 
                         writtenImage: "lecture/ecrit/lilas.jpeg",
                         sound: "sons/mots/lilas.mp3" 
                     },
                     { 
                         id: 3,  
-                  
+                        word: "rire",
                         image: "lecture/images/rire.jpeg", 
                         writtenImage: "lecture/ecrit/rire.jpeg",
                         sound: "sons/mots/rire.mp3" 
                     },
                     { 
                         id: 4,  
-             
+                        word: "sirop",
                         image: "lecture/images/sirop.jpeg", 
                         writtenImage: "lecture/ecrit/sirop.jpeg",
                         sound: "sons/mots/sirop.mp3" 
                     },
                     { 
                         id: 5,  
-                    
+                        word: "tasse",
                         image: "lecture/images/tasse.jpeg", 
                         writtenImage: "lecture/ecrit/tasse.jpeg",
                         sound: "sons/mots/tasse.mp3" 
                     },
                     { 
                         id: 6,  
-                
+                        word: "patte",
                         image: "lecture/images/patte.jpeg", 
                         writtenImage: "lecture/ecrit/patte.jpeg",
                         sound: "sons/mots/patte.mp3" 
                     },
                     { 
                         id: 7,  
-                  
+                        word: "zéro",
                         image: "lecture/images/zéro.jpeg", 
                         writtenImage: "lecture/ecrit/zéro.jpeg",
                         sound: "sons/mots/zéro.mp3" 
                     },
                     { 
                         id: 8,  
-          
+                        word: "télé",
                         image: "lecture/images/télé.jpeg", 
                         writtenImage: "lecture/ecrit/télé.jpeg",
                         sound: "sons/mots/télé.mp3" 
                     },
                     { 
                         id: 9,  
-                   
+                        word: "cube",
                         image: "lecture/images/cube.jpeg", 
                         writtenImage: "lecture/ecrit/cube.jpeg",
                         sound: "sons/mots/cube.mp3" 
                     },
                     { 
                         id: 10, 
-                  
+                        word: "café",
                         image: "lecture/images/café.jpeg", 
                         writtenImage: "lecture/ecrit/café.jpeg",
                         sound: "sons/mots/café.mp3" 
@@ -747,105 +779,105 @@
                 items: [
                     { 
                         id: 11, 
-      
+                        word: "olive",
                         image: "lecture/images/olive.jpeg", 
                         writtenImage: "lecture/ecrit/olive.jpeg",
                         sound: "sons/mots/olive.mp3" 
                     },
                     { 
                         id: 12, 
-                  
+                        word: "narine",
                         image: "lecture/images/narine.jpeg", 
                         writtenImage: "lecture/ecrit/narine.jpeg",
                         sound: "sons/mots/narine.mp3" 
                     },
                     { 
                         id: 13, 
-                      
+                        word: "avocat",
                         image: "lecture/images/avocat.jpeg", 
                         writtenImage: "lecture/ecrit/avocat.jpeg",
                         sound: "sons/mots/avocat.mp3" 
                     },
                     { 
                         id: 14, 
-                   
+                        word: "otarie",
                         image: "lecture/images/otarie.jpeg", 
                         writtenImage: "lecture/ecrit/otarie.jpeg",
                         sound: "sons/mots/otarie.mp3" 
                     },
                     { 
                         id: 15, 
-                        
+                        word: "canapé",
                         image: "lecture/images/canapé.jpeg", 
                         writtenImage: "lecture/ecrit/canapé.jpeg",
                         sound: "sons/mots/canapé.mp3" 
                     },
                     { 
                         id: 16, 
-         
+                        word: "haricot",
                         image: "lecture/images/haricot.jpeg", 
                         writtenImage: "lecture/ecrit/haricot.jpeg",
                         sound: "sons/mots/haricot.mp3" 
                     },
                     { 
                         id: 17, 
-              
+                        word: "cabane",
                         image: "lecture/images/cabane.jpeg", 
                         writtenImage: "lecture/ecrit/cabane.jpeg",
                         sound: "sons/mots/cabane.mp3" 
                     },
                     { 
                         id: 18, 
-                      
+                        word: "lézard",
                         image: "lecture/images/lézard.jpeg", 
                         writtenImage: "lecture/ecrit/lézard.jpeg",
                         sound: "sons/mots/lézard.mp3" 
                     },
                     { 
                         id: 19, 
-                   
+                        word: "renard",
                         image: "lecture/images/renard.jpeg", 
                         writtenImage: "lecture/ecrit/renard.jpeg",
                         sound: "sons/mots/renard.mp3" 
                     },
                     { 
                         id: 20, 
-                    
+                        word: "hibou",
                         image: "lecture/images/hibou.jpeg", 
                         writtenImage: "lecture/ecrit/hibou.jpeg",
                         sound: "sons/mots/hibou.mp3" 
                     },
                     { 
                         id: 21, 
-                        
+                        word: "hérisson",
                         image: "lecture/images/hérisson.jpeg", 
                         writtenImage: "lecture/ecrit/hérisson.jpeg",
                         sound: "sons/mots/hérisson.mp3" 
                     },
                     { 
                         id: 22, 
-              
+                        word: "sandale",
                         image: "lecture/images/sandale.jpeg", 
                         writtenImage: "lecture/ecrit/sandale.jpeg",
                         sound: "sons/mots/sandale.mp3" 
                     },
                     { 
                         id: 23, 
-                 
+                        word: "cadenas",
                         image: "lecture/images/cadenas.jpeg", 
                         writtenImage: "lecture/ecrit/cadenas.jpeg",
                         sound: "sons/mots/cadenas.mp3" 
                     },
                     { 
                         id: 24, 
-                   
+                        word: "cheminée",
                         image: "lecture/images/cheminée.jpeg", 
                         writtenImage: "lecture/ecrit/cheminée.jpeg",
                         sound: "sons/mots/cheminée.mp3" 
                     },
                     { 
                         id: 25, 
-                   
+                        word: "carnaval",
                         image: "lecture/images/carnaval.jpeg", 
                         writtenImage: "lecture/ecrit/carnaval.jpeg",
                         sound: "sons/mots/carnaval.mp3" 
@@ -860,9 +892,10 @@
             }
         };
 
-        // Phrases pour le niveau 3 (générées automatiquement)
+        // Phrases pour le niveau 3 (générées automatiquement) - DANS L'ORDRE DE 1 À 20
         for (let i = 1; i <= 20; i++) {
             LEVELS[3].items.push({
+                id: i,
                 image: `cartes/carte${i}.jpg`,
                 sentence1: `Phrase 1 pour carte ${i}`,
                 sentence2: `Phrase 2 pour carte ${i}`,
@@ -1028,14 +1061,20 @@
             // Récupérer la progression sauvegardée pour ce niveau
             const progress = getLevelProgress(level);
     
-            // Récupérer l'ordre mélangé sauvegardé ou en créer un nouveau
-            const savedShuffledOrder = getShuffledOrderFromStorage(level);
-            if (savedShuffledOrder && savedShuffledOrder.length === currentLevel.items.length) {
-                shuffledOrder = savedShuffledOrder;
+            // MODIFICATION POUR LE NIVEAU 3 : Toujours dans l'ordre 1 à 20
+            if (level === 3) {
+                // Pour le niveau 3, toujours garder l'ordre 1 à 20 (difficulté croissante)
+                shuffledOrder = [...currentLevel.items]; // Pas de mélange, ordre naturel
             } else {
-                // Créer un nouvel ordre aléatoire des mots et le sauvegarder
-                shuffledOrder = shuffleArray([...currentLevel.items]);
-                saveShuffledOrderToStorage(level, shuffledOrder);
+                // Pour les niveaux 1 et 2, garder la logique existante
+                const savedShuffledOrder = getShuffledOrderFromStorage(level);
+                if (savedShuffledOrder && savedShuffledOrder.length === currentLevel.items.length) {
+                    shuffledOrder = savedShuffledOrder;
+                } else {
+                    // Créer un nouvel ordre aléatoire des mots et le sauvegarder
+                    shuffledOrder = shuffleArray([...currentLevel.items]);
+                    saveShuffledOrderToStorage(level, shuffledOrder);
+                }
             }
     
             // Reprendre à la dernière question non réussie
@@ -1173,46 +1212,29 @@
             setupSentenceQuestion();
             
             updateProgress();
-
-            setTimeout(() => {
-                playCurrentSentenceSound();
-            }, 800);
         }
 
         function setupSentenceQuestion() {
-            // Afficher l'image
+            // Afficher l'image - BEAUCOUP PLUS GRANDE
             const imgElement = document.getElementById('currentCardImage');
             imgElement.src = currentTargetWord.image;
             imgElement.onerror = function() {
-                this.src = 'https://via.placeholder.com/300x200?text=Image+manquante';
+                this.src = 'https://via.placeholder.com/500x400?text=Image+manquante';
             };
             
-            // Générer les choix de phrases
+            // Générer les choix - JUSTE DES CARRÉS AVEC 1, 2, 3
             const choicesGrid = document.getElementById('sentenceChoicesGrid');
             choicesGrid.innerHTML = '';
             
             const correctAnswer = LEVELS[3].correctAnswers[currentQuestionIndex];
-            const sentences = [
-                currentTargetWord.sentence1,
-                currentTargetWord.sentence2,
-                currentTargetWord.sentence3
-            ];
             
-            for (let i = 0; i < 3; i++) {
+            // Créer 3 carrés avec les chiffres 1, 2, 3
+            for (let i = 1; i <= 3; i++) {
                 const choiceDiv = document.createElement('div');
                 choiceDiv.className = 'sentence-choice';
-                choiceDiv.onclick = () => checkSentenceAnswer(i + 1, correctAnswer, choiceDiv);
+                choiceDiv.textContent = i; // Juste le chiffre
+                choiceDiv.onclick = () => checkSentenceAnswer(i, correctAnswer, choiceDiv);
                 
-                const numberDiv = document.createElement('div');
-                numberDiv.className = 'sentence-number';
-                numberDiv.textContent = i + 1;
-                
-                const textDiv = document.createElement('div');
-                textDiv.className = 'sentence-text';
-                textDiv.textContent = sentences[i];
-                
-                choiceDiv.appendChild(numberDiv);
-                choiceDiv.appendChild(textDiv);
                 choicesGrid.appendChild(choiceDiv);
             }
         }
@@ -1273,8 +1295,6 @@
                     choice.style.cursor = 'not-allowed';
                 });
         
-                playSentenceSound();
-        
                 setTimeout(() => {
                     currentQuestionIndex++;
                     if (currentQuestionIndex < shuffledOrder.length) {
@@ -1316,21 +1336,11 @@
         }
 
         function playCurrentSentenceSound() {
-            playSentenceSound();
+            // Fonction supprimée - pas de bouton son
         }
 
         function playSentenceSound() {
-            if (currentTargetWord && currentTargetWord.sound) {
-                try {
-                    const audio = new Audio(currentTargetWord.sound);
-                    audio.volume = 0.8;
-                    audio.play().catch(error => {
-                        console.log(`Impossible de jouer le son pour la carte:`, error);
-                    });
-                } catch (error) {
-                    console.log(`Erreur lors du chargement du son pour la carte:`, error);
-                }
-            }
+            // Fonction supprimée - pas de bouton son
         }
 
         function updateScore() {
@@ -1470,3 +1480,4 @@
     </script>
 </body>
 </html>
+[file content end]

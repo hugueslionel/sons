@@ -1,4 +1,4 @@
-
+[file content begin]
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1295,6 +1295,11 @@
                     choice.style.cursor = 'not-allowed';
                 });
         
+                // JOUER LE SON DE LA BONNE PHRASE AVANT DE PASSER À LA SUIVANTE
+                playSentenceSound();
+                
+                // Attendre la fin du son (au moins 4 secondes pour la plus longue) avant de passer
+                // On ajoute un délai supplémentaire pour laisser l'animation se terminer
                 setTimeout(() => {
                     currentQuestionIndex++;
                     if (currentQuestionIndex < shuffledOrder.length) {
@@ -1302,7 +1307,7 @@
                     } else {
                         endGame();
                     }
-                }, 1500);
+                }, 4500); // 4.5 secondes pour laisser le temps au son de finir
             } else {
                 element.classList.add('wrong');
                 element.classList.add('disabled');
@@ -1335,12 +1340,18 @@
             }
         }
 
-        function playCurrentSentenceSound() {
-            // Fonction supprimée - pas de bouton son
-        }
-
         function playSentenceSound() {
-            // Fonction supprimée - pas de bouton son
+            if (currentTargetWord && currentTargetWord.sound) {
+                try {
+                    const audio = new Audio(currentTargetWord.sound);
+                    audio.volume = 0.8;
+                    audio.play().catch(error => {
+                        console.log(`Impossible de jouer le son pour la carte:`, error);
+                    });
+                } catch (error) {
+                    console.log(`Erreur lors du chargement du son pour la carte:`, error);
+                }
+            }
         }
 
         function updateScore() {
@@ -1480,4 +1491,4 @@
     </script>
 </body>
 </html>
-
+[file content end]
